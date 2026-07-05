@@ -9,7 +9,8 @@
   --font-body:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body,#root{background:var(--bg)}
+html,body{background:var(--bg)}
+#root{background:transparent}
 body{overscroll-behavior-y:none}
 
 /* фиксиран фон: AI жарава + тъмен воал, който изтънява с прогреса */
@@ -28,7 +29,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 
 /* header */
 .hdr{padding:14px 16px 10px;position:sticky;top:0;z-index:10;
-  background:linear-gradient(rgba(12,10,9,.97),rgba(12,10,9,.88));backdrop-filter:blur(12px);
+  background:linear-gradient(rgba(12,10,9,.82),rgba(12,10,9,.66));backdrop-filter:blur(14px);
   border-bottom:1px solid var(--line);
   box-shadow:0 8px 32px -12px rgba(255,77,20,calc(var(--glow)*.55));
   transition:box-shadow .8s ease}
@@ -69,24 +70,24 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ember);font-weight:800}
 .lbl{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);font-weight:800;margin:12px 0 5px}
 
-.card{background:rgba(23,18,16,.62);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:10px;transition:border-color .25s, background .25s, transform .15s;backdrop-filter:blur(6px)}
-.card.done{border-color:rgba(255,184,107,.35);background:linear-gradient(rgba(255,120,40,.06),rgba(255,120,40,.02)),rgba(23,18,16,.62)}
+.card{background:rgba(23,18,16,.48);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:10px;transition:border-color .25s, background .25s, transform .15s;backdrop-filter:blur(6px)}
+.card.done{border-color:rgba(255,184,107,.35);background:linear-gradient(rgba(255,120,40,.06),rgba(255,120,40,.02)),rgba(23,18,16,.48)}
 
 /* stats */
 .stats{display:flex;gap:8px}
-.stat{flex:1;background:rgba(23,18,16,.62);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
+.stat{flex:1;background:rgba(23,18,16,.48);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
 .stat b{font-family:var(--font-display);font-size:17px;color:var(--amber);display:block}
 .stat span{font-size:10px;color:var(--mut)}
 
 /* тема на седмицата */
-.themeBan{background:linear-gradient(120deg, rgba(255,77,20,.16), rgba(255,184,107,.05)),rgba(23,18,16,.66);
+.themeBan{background:linear-gradient(120deg, rgba(255,77,20,.16), rgba(255,184,107,.05)),rgba(23,18,16,.5);
   border:1px solid rgba(255,77,20,.3);border-radius:16px;padding:11px 14px;margin-bottom:12px;
   font-size:12.5px;line-height:1.5}
 .themeBan b{color:var(--amber);font-family:var(--font-display);font-size:11px;letter-spacing:.08em;display:block;margin-bottom:3px}
 
 /* timeline */
 .tl{display:flex;flex-direction:column;gap:8px}
-.tlItem{display:flex;align-items:center;gap:10px;background:rgba(23,18,16,.62);border:1px solid var(--line);border-radius:16px;padding:11px 12px;position:relative;transition:all .25s;backdrop-filter:blur(6px)}
+.tlItem{display:flex;align-items:center;gap:10px;background:rgba(23,18,16,.48);border:1px solid var(--line);border-radius:16px;padding:11px 12px;position:relative;transition:all .25s;backdrop-filter:blur(6px)}
 .tlItem.done{border-color:rgba(255,184,107,.35)}
 .tlItem.done .tlT{color:var(--amber)}
 .tlInfo{display:flex;gap:10px;align-items:center;padding:2px 12px;font-size:12px;color:var(--mut)}
@@ -127,7 +128,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 
 /* под-табове (План) */
 .subTabs{display:flex;gap:6px;margin-bottom:14px}
-.subTab{flex:1;padding:9px 4px;border-radius:12px;border:1px solid var(--line);background:rgba(23,18,16,.6);
+.subTab{flex:1;padding:9px 4px;border-radius:12px;border:1px solid var(--line);background:rgba(23,18,16,.46);
   font-size:12px;font-weight:800;color:var(--mut);transition:all .2s;text-align:center}
 .subTab.act{color:#1a0d05;background:linear-gradient(135deg,var(--ember),#ff7a2e);border-color:transparent;box-shadow:0 0 14px rgba(255,77,20,.35)}
 
@@ -162,7 +163,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .restCard strong{font-family:var(--font-display);font-size:15px;color:var(--text)}
 .restCard p{font-size:13px;color:var(--text);line-height:1.5}
 .doneBanner{text-align:center;font-weight:800;color:var(--amber);padding:14px;font-size:13.5px;animation:fadeIn .4s ease}
-.hint{background:rgba(33,25,19,.68)}
+.hint{background:rgba(33,25,19,.55)}
 .hint strong{font-size:12px;display:block;margin-bottom:4px;color:var(--amber)}
 .hint p{font-size:12px;color:var(--mut);line-height:1.55}
 
@@ -188,7 +189,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .calDows{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:5px}
 .calDows span{text-align:center;font-size:9.5px;color:var(--mut);font-weight:800;letter-spacing:.05em}
 .calGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.calCell{aspect-ratio:.86;border-radius:12px;background:rgba(23,18,16,.6);border:1px solid var(--line);
+.calCell{aspect-ratio:.86;border-radius:12px;background:rgba(23,18,16,.46);border:1px solid var(--line);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;
   position:relative;transition:transform .12s;animation:cellIn .4s ease backwards}
 .calCell:active{transform:scale(.92)}
@@ -230,10 +231,10 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 
 /* badges */
 .badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.badge{background:rgba(23,18,16,.62);border:1px solid var(--line);border-radius:14px;padding:10px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px}
+.badge{background:rgba(23,18,16,.48);border:1px solid var(--line);border-radius:14px;padding:10px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px}
 .badge .bi{font-size:22px;filter:grayscale(1);opacity:.3}
 .badge span{font-size:8.5px;color:var(--mut);font-weight:700;line-height:1.25}
-.badge.on{border-color:rgba(255,184,107,.4);background:linear-gradient(rgba(255,120,40,.08),rgba(255,120,40,.02)),rgba(23,18,16,.62)}
+.badge.on{border-color:rgba(255,184,107,.4);background:linear-gradient(rgba(255,120,40,.08),rgba(255,120,40,.02)),rgba(23,18,16,.48)}
 .badge.on .bi{filter:none;opacity:1;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
 .badge.on span{color:var(--amber)}
 @keyframes pop{from{transform:scale(.4)}to{transform:none}}
@@ -252,7 +253,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 
 /* nav */
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;display:flex;z-index:20;
-  background:rgba(15,12,10,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  background:rgba(15,12,10,.78);backdrop-filter:blur(16px);border-top:1px solid var(--line);
   padding:8px 6px calc(10px + env(safe-area-inset-bottom))}
 .navTab{flex:1;display:flex;flex-direction:column;gap:3px;align-items:center;padding:6px 2px;color:var(--mut);border-radius:12px;transition:color .2s}
 .navTab span{font-size:9.5px;font-weight:700;letter-spacing:.03em}
@@ -265,5 +266,6 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
   *{transition:none!important;animation:none!important}
   #embers{display:none}
 }
+
 
 
