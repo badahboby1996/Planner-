@@ -27,6 +27,35 @@ const DEFAULT_HABITS_BAD = [
   { id: "hb2", name: "Късно ядене" }, { id: "hb3", name: "Нездравословна храна" },
   { id: "hb4", name: "Късно лягане" }, { id: "hb5", name: "Мързел / отлагане" }];
 
+
+/* ---------- икони за ръчни задачи (авто-разпознаване по ключови думи) ---------- */
+const TASK_ICONS = [
+  { e:"✂️", kw:["подстри","фризьор","бръснар","коса","брада"] },
+  { e:"🛒", kw:["пазар","магазин","купи","покупк","лидл","кауфланд","билла"] },
+  { e:"💼", kw:["работа","среща","офис","смяна","интервю","колег"] },
+  { e:"📞", kw:["обад","звън","разговор","call","телефон"] },
+  { e:"🚗", kw:["кола","сервиз","гума","бензин","паркинг","винетка","шофьор"] },
+  { e:"🏥", kw:["лекар","зъбол","доктор","преглед","болниц","кръв","изследван"] },
+  { e:"💊", kw:["лекарств","хапче","витамин","аптека","рецепта"] },
+  { e:"🏋️", kw:["фитнес","трениров","зала","кардио","бягане","плуване"] },
+  { e:"🎬", kw:["видео","снима","монтаж","клип","контент","reel","тикток","инста"] },
+  { e:"📄", kw:["документ","банка","плащане","сметка","данъц","нап","фактура","наем"] },
+  { e:"🎂", kw:["рожден","парти","празник","подарък","имен ден"] },
+  { e:"🧹", kw:["чистене","пране","гладене","почист","подред"] },
+  { e:"📚", kw:["чете","книга","уча","курс","урок","изпит"] },
+  { e:"✈️", kw:["полет","пътуване","билет","хотел","резервац","екскурзия"] },
+  { e:"📌", kw:[] },
+];
+const detectTaskIcon = (txt) => {
+  const t = (txt || "").toLowerCase();
+  for (const it of TASK_ICONS) for (const k of it.kw) if (k && t.includes(k)) return it.e;
+  return "📌";
+};
+const parseTimeMin = (t) => {
+  const m = /^(\d{1,2}):(\d{2})/.exec((t || "").trim());
+  return m ? (+m[1]) * 60 + (+m[2]) : 24 * 60 + 1; // без час -> в края на деня
+};
+
 const dk = (n) => `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`;
 const mk = (n) => `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}`;
 const addDays = (n, s) => { const l = new Date(n); l.setDate(l.getDate()+s); return l; };
@@ -42,6 +71,10 @@ let tab = "today";
 let planSub = "food";            // под-таб на План: food | train | content
 let calMonth = mk(cur);          // показван месец в календара
 let openMeal = null, openEx = null, addingTask = false, editHabits = false, editPlan = false;
+let editingTask = null;         // id на ръчна задача в режим редакция
+let scrollToNow = true;         // еднократен автоскрол до текущия час в "Днес"
+let lastTab = "today";          // за плавния преход между табове
+let toastTimer = null;
 let saveTimer = null, syncLbl = "локално";
 let prevPct = 0;
 
@@ -92,6 +125,58 @@ function mealsFor(dateObj) {
   if (!ed.meals) return base;
   return base.map((meal, i) => ed.meals[i] ? { ...meal, ...ed.meals[i] } : meal);
 }
+/* ---------- "Гориво": каква полза носи ястието (разчита продуктите) ---------- */
+const FUEL_RULES = [
+  ["пилешк","чист протеин за възстановяване на мускулите"],
+  ["телешк","протеин + желязо и креатин за сила"],
+  ["кюфте","протеин + желязо и креатин за сила"],
+  ["тон","протеин + омега-3 срещу възпаления"],
+  ["туна","протеин + омега-3 срещу възпаления"],
+  ["сьомга","протеин + омега-3 срещу възпаления"],
+  ["скумрия","протеин + омега-3 срещу възпаления"],
+  ["риба","протеин + омега-3 срещу възпаления"],
+  ["яйц","пълен протеин + холин за фокус"],
+  ["кисело мляко","казеин + пробиотици за храносмилането"],
+  ["извара","бавен казеинов протеин — сит с часове"],
+  ["овес","бавни въглехидрати — енергия с часове"],
+  ["киноа","пълноценен растителен протеин + магнезий"],
+  ["булгур","бавни въглехидрати + фибри"],
+  ["ориз","чисти въглехидрати — зареждат гликогена"],
+  ["картоф","въглехидрати + калий за мускулите"],
+  ["боб","фибри + растителен протеин за ситост"],
+  ["леща","фибри + растителен протеин за ситост"],
+  ["нахут","фибри + растителен протеин за ситост"],
+  ["авокадо","здравословни мазнини за хормоните"],
+  ["орех","омега-3 за мозъка"],
+  ["бадем","витамин Е + магнезий"],
+  ["фъстъч","здравословни мазнини + дълга ситост"],
+  ["банан","бърза енергия + калий против крампи"],
+  ["мед","бърза естествена енергия"],
+  ["канела","изглажда кръвната захар"],
+  ["гъби","витамин D + селен"],
+  ["домат","ликопен + витамин C"],
+  ["лимон","витамин C за имунитета"],
+  ["хляб","фибри + стабилна енергия"],
+  ["зехтин","мононенаситени мазнини за сърцето"],
+  ["маслин","мононенаситени мазнини за сърцето"],
+  ["праскова","витамини + антиоксиданти"],
+  ["кайси","витамини + антиоксиданти"],
+  ["ябълк","витамини + антиоксиданти"],
+  ["спанак","фибри и микроелементи"],["брокол","фибри и микроелементи"],
+  ["тиквичк","фибри и микроелементи"],["чушк","фибри и микроелементи"],
+  ["краставиц","фибри и микроелементи"],["салата","фибри и микроелементи"],
+  ["зеленчуц","фибри и микроелементи"],["зелен боб","фибри и микроелементи"],
+];
+function mealBenefit(meal) {
+  const txt = ((meal.n||"") + " " + (meal.ing||"")).toLowerCase();
+  const out = [];
+  for (const [kw, phrase] of FUEL_RULES) {
+    if (txt.includes(kw) && !out.includes(phrase)) out.push(phrase);
+    if (out.length >= 3) break;
+  }
+  return out.length ? out.join(" · ") : "балансирано гориво по плана — яж без колебание";
+}
+
 // Контент за конкретна дата
 function contentFor(dateObj) {
   const key = dk(dateObj), ed = dayEdits(key);
@@ -151,11 +236,24 @@ function icon(name, size = 20) {
 }
 function checkBtn(on, onTap, small) {
   const b = h("button",{class:`chk ${on?"on":""} ${small?"sm":""}`,"aria-pressed":on,"aria-label":on?"Отметнато":"Отметни",
-    onclick:(ev)=>{ if(!on) burst(ev.clientX,ev.clientY); onTap(ev); }});
+    onclick:(ev)=>{ if(!on){ burst(ev.clientX,ev.clientY); if(navigator.vibrate) navigator.vibrate(12); } onTap(ev); }});
   const sv = svgEl("svg",{viewBox:"0 0 24 24",width:small?14:17,height:small?14:17});
   sv.appendChild(svgEl("path",{d:"M5 12.5l4.2 4.2L19 7",fill:"none",stroke:"currentColor","stroke-width":"3","stroke-linecap":"round","stroke-linejoin":"round"}));
   b.appendChild(sv);
   return b;
+}
+
+/* ---------- Toast с "Върни" (5 сек) ---------- */
+function showToast(msg, undoFn) {
+  document.querySelectorAll(".toast").forEach((t) => t.remove());
+  clearTimeout(toastTimer);
+  const el = h("div", { class: "toast", role: "status" },
+    h("span", { class: "toastMsg" }, msg),
+    undoFn ? h("button", { class: "toastUndo", onclick: () => {
+      clearTimeout(toastTimer); el.remove(); undoFn();
+    }}, "Върни") : null);
+  document.body.appendChild(el);
+  toastTimer = setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 320); }, 5000);
 }
 
 /* ---------- ЧАСТИЦИ: жарава фон + искри при отметка ---------- */
@@ -174,14 +272,15 @@ function initEmbers() {
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
   const W = () => window.innerWidth, H = () => window.innerHeight;
-  const N = Math.min(48, Math.round(W()/12));
+  const N = Math.min(68, Math.round(W()/9));
   for (let i=0;i<N;i++) embers.push({
     x: Math.random()*W(), y: Math.random()*H(),
-    r: 1+Math.random()*2.8, vy: .25+Math.random()*.85, vx:(Math.random()-.5)*.3,
-    a: .35+Math.random()*.55, tw: Math.random()*Math.PI*2 });
+    r: 1.1+Math.random()*3.1, vy: .25+Math.random()*.85, vx:(Math.random()-.5)*.3,
+    a: .45+Math.random()*.55, tw: Math.random()*Math.PI*2 });
   let last = 0;
   (function loop(ts) {
     requestAnimationFrame(loop);
+    if (document.hidden) return;       // таб на заден план -> нула работа
     if (ts - last < 40) return; // ~25 fps — пести батерия
     last = ts;
     ctx2d.clearRect(0,0,W(),H());
@@ -254,6 +353,13 @@ function totals() {
     if (w && w.ex.every((_,i)=>u[`ex${i}`])) workouts++;
     for (let i=0;i<4;i++) if (u[`meal${i}`]) meals++;
     if (u.content) videos++;
+  }
+  // ръчни задачи: свършено кардио/тренировка (🏋️) и снимано видео (🎬) също се броят
+  for (const key of Object.keys(state.tasks)) for (const t of state.tasks[key]||[]) {
+    if (!t.done) continue;
+    const ic = t.ico || detectTaskIcon(t.t);
+    if (ic === "🏋️") workouts++;
+    if (ic === "🎬") videos++;
   }
   const refls = Object.values(state.refl).filter((i)=>i.rate||i.plus||i.minus||i.note).length;
   return { workouts, meals, refls, videos };
@@ -333,7 +439,7 @@ function viewToday() {
     const times = ["07:30","13:00","16:30",workday?"20:00":"19:30"];
     const names = (m && m.mealTypes) || ["Закуска","Обяд","Следобед","Вечеря"];
     meals.forEach((meal,i) => {
-      items.push({ id:`meal${i}`, time:times[i], t:`${names[i]} · ${meal.n}`, s:meal.dev.join(" · "), k:"food", nav:["plan","food"] });
+      items.push({ id:`meal${i}`, time:times[i], t:`${names[i]} · ${meal.n}`, s:mealBenefit(meal), k:"food", nav:["plan","food"] });
       if (i===0 && workday) items.push({ id:"__leave", time:"09:10", t:"Тръгване за работа", k:"info" });
       if (i===2 && workday) items.push({ id:"__home", time:"19:30", t:"Прибиране", k:"info" });
     });
@@ -341,6 +447,11 @@ function viewToday() {
   if (cont && !cont.rest) items.push({ id:"content", time:"21:00", t:`Контент · ${cont.f}`, s:cont.h, k:"cam", nav:["plan","content"] });
   else if (cont && cont.rest) items.push({ id:"content", time:"21:00", t:"Контент · без пост", s:cont.d.slice(0,60)+"…", k:"cam", nav:["plan","content"] });
   items.push({ id:"evening", time:"22:00", t:"Вечерна рутина", s:"Телефон извън спалнята · 20 страници четене", k:"habit" });
+  // ръчните задачи влизат в плана според часа си (като Google Calendar)
+  tasks.forEach((tk) => items.push({
+    custom:true, task:tk, id:"task"+tk.id, time:tk.time||"",
+    t:tk.t, s:tk.time?"твоя задача":"твоя задача · без час", ico:tk.ico||detectTaskIcon(tk.t) }));
+  items.sort((a,b) => parseTimeMin(a.time) - parseTimeMin(b.time)); // стабилно: равни часове пазят реда
   const icoMap = { habit:"habit", food:"bowl", train:"train", cam:"cam", info:"chev" };
 
   const statEls = [];
@@ -351,9 +462,34 @@ function viewToday() {
     h("div",{class:"stats"}, stat(tot.workouts,"тренировки"), stat(tot.meals,"хранения"), stat(tot.videos,"видеа"), stat(tot.refls,"рефлексии")),
     h("h2",{class:"secT"},"Планът за деня"),
     h("div",{class:"tl"},
-      items.map((e) => e.k==="info"
-        ? h("div",{class:"tlInfo"}, h("span",{class:"tlTime"},e.time), h("span",null,e.t))
-        : h("div",{class:`tlItem ${(e.id==="__workout"?e.done:o[e.id])?"done":""}`},
+      items.map((e) => {
+        if (e.k==="info")
+          return h("div",{class:"tlInfo","data-time":e.time}, h("span",{class:"tlTime"},e.time), h("span",null,e.t));
+        if (e.k==="rest")
+          return h("div",{class:"tlItem restRow","data-time":e.time},
+            h("span",{class:"tlTime"},e.time),
+            h("div",{class:"tlIco"},icon("flame",17)),
+            h("button",{class:"tlBody",onclick:()=>{ if(e.nav){ tab=e.nav[0]; planSub=e.nav[1]; render(); window.scrollTo(0,0);} }},
+              h("span",{class:"tlT"},e.t),
+              h("span",{class:"tlS"},e.s)));
+        if (e.custom) {
+          const tk = e.task;
+          if (editingTask === tk.id) return taskForm(key, tk);
+          return h("div",{class:`tlItem custom ${tk.done?"done":""}`,"data-time":e.time},
+            h("span",{class:"tlTime"},tk.time||"—"),
+            h("div",{class:"tlIco emoji","aria-hidden":"true"},e.ico),
+            h("div",{class:"tlBody"},h("span",{class:"tlT"},tk.t),h("span",{class:"tlS"},e.s)),
+            h("button",{class:"del","aria-label":"Редактирай задача",onclick:()=>{ editingTask=tk.id; addingTask=false; render(); }},icon("edit",14)),
+            checkBtn(tk.done,()=>{ state.tasks[key]=tasks.map((t)=>t.id===tk.id?{...t,done:!t.done}:t); save(); render(); }),
+            h("button",{class:"del","aria-label":"Изтрий задача",onclick:()=>{
+              const removed = tk;
+              state.tasks[key]=tasks.filter((t)=>t.id!==tk.id); save(); render();
+              showToast(`Изтрито: ${removed.t}`, ()=>{
+                state.tasks[key]=[...(state.tasks[key]||[]),removed]; save(); render();
+              });
+            }},icon("x",13)));
+        }
+        return h("div",{class:`tlItem ${(e.id==="__workout"?e.done:o[e.id])?"done":""}`,"data-time":e.time},
             h("span",{class:"tlTime"},e.time),
             h("div",{class:"tlIco"},icon(icoMap[e.k],17)),
             h("button",{class:"tlBody",onclick:()=>{ if(e.nav){ tab=e.nav[0]; planSub=e.nav[1]; render(); window.scrollTo(0,0);} }},
@@ -361,14 +497,8 @@ function viewToday() {
               e.s ? h("span",{class:"tlS"},e.s) : null),
             e.id==="__workout"
               ? checkBtn(e.done,()=>{ tab="plan"; planSub="train"; render(); window.scrollTo(0,0); })
-              : checkBtn(!!o[e.id],()=>toggleCheck(e.id)))),
-      tasks.map((e) =>
-        h("div",{class:`tlItem custom ${e.done?"done":""}`},
-          h("span",{class:"tlTime"},e.time||"—"),
-          h("div",{class:"tlIco"},icon("plus",15)),
-          h("div",{class:"tlBody"},h("span",{class:"tlT"},e.t),h("span",{class:"tlS"},"твоя задача")),
-          checkBtn(e.done,()=>{ state.tasks[key]=tasks.map((t)=>t.id===e.id?{...t,done:!t.done}:t); save(); render(); }),
-          h("button",{class:"del","aria-label":"Изтрий",onclick:()=>{ state.tasks[key]=tasks.filter((t)=>t.id!==e.id); save(); render(); }},icon("x",13))))),
+              : checkBtn(!!o[e.id],()=>toggleCheck(e.id)));
+      })),
     addingTask ? taskForm(key)
       : h("button",{class:"addBtn",onclick:()=>{addingTask=true;render();}},icon("plus",15),` Добави задача за ${cur.getDate()} ${MON[cur.getMonth()]}`),
     h("h2",{class:"secT"},"Вечерна рефлексия"),
@@ -387,18 +517,40 @@ function reflArea(label,val,ph,onInput) {
   return [h("span",{class:"lbl"},label),
     h("textarea",{class:"ta",rows:2,placeholder:ph,oninput:(e)=>onInput(e.target.value)},val||"")];
 }
-function taskForm(key) {
-  const inp = h("input",{class:"inp",placeholder:"Задача (напр. подстрижка)"});
-  const time = h("input",{class:"inp time",placeholder:"час"});
+function taskForm(key, existing) {
+  const inp = h("input",{class:"inp",placeholder:"Задача (напр. подстрижка)",value:existing?existing.t:""});
+  const time = h("input",{class:"inp time",type:"time","aria-label":"Час на задачата",value:existing&&existing.time?existing.time:""});
+  let manualIco = existing ? (existing.ico||null) : null; // ръчно избрана икона има превес над авто-разпознатата
+  const icoBtns = [];
+  const markActive = () => {
+    const act = manualIco || detectTaskIcon(inp.value);
+    icoBtns.forEach(([b,e]) => b.classList.toggle("act", e===act));
+  };
+  const icoRow = h("div",{class:"icoPick",role:"group","aria-label":"Икона на задачата"},
+    TASK_ICONS.map((it) => {
+      const b = h("button",{type:"button",class:"icoBtn","aria-label":"Икона "+it.e,
+        onclick:()=>{ manualIco = manualIco===it.e ? null : it.e; markActive(); }}, it.e);
+      icoBtns.push([b,it.e]);
+      return b;
+    }));
+  inp.addEventListener("input", markActive);
   const add = () => {
     const t = inp.value.trim(); if (!t) return;
-    state.tasks[key]=[...(state.tasks[key]||[]),{id:Date.now(),t,time:time.value,done:false}];
-    addingTask=false; save(); render();
+    const ico = manualIco || detectTaskIcon(t);
+    if (existing) {
+      state.tasks[key]=(state.tasks[key]||[]).map((x)=>x.id===existing.id?{...x,t,time:time.value,ico}:x);
+      editingTask=null;
+    } else {
+      state.tasks[key]=[...(state.tasks[key]||[]),{id:Date.now(),t,time:time.value,ico,done:false}];
+      addingTask=false;
+    }
+    save(); render();
   };
   inp.addEventListener("keydown",(e)=>e.key==="Enter"&&add());
-  return h("div",{class:"addForm"},inp,time,
-    h("button",{class:"btn",onclick:add},"Добави"),
-    h("button",{class:"btnGhost",onclick:()=>{addingTask=false;render();}},"Откажи"));
+  requestAnimationFrame(markActive);
+  return h("div",{class:"addForm"},inp,time,icoRow,
+    h("button",{class:"btn",onclick:add},existing?"Запази":"Добави"),
+    h("button",{class:"btnGhost",onclick:()=>{addingTask=false;editingTask=null;render();}},"Откажи"));
 }
 
 /* ---------- ПЛАН (под-табове: Хранене / Спорт / Контент) ---------- */
@@ -427,7 +579,8 @@ function planFood() {
           h("div",{class:"mealHeadL"},
             h("span",{class:"eyebrow"},names[a]),
             h("span",{class:"mealN"},e.n),
-            h("div",{class:"chips"},e.dev.map((t)=>h("span",{class:"chip"},t)))),
+            h("div",{class:"chips"},e.dev.map((t)=>h("span",{class:"chip"},t))),
+            h("div",{class:"fuel"},"🔥 ",mealBenefit(e))),
           h("span",{class:`car ${openMeal===a?"up":""}`},icon("chev",16))),
         openMeal===a ? h("div",{class:"mealBody"},
           editPlan ? mealEditForm(key,a,e) : [
@@ -717,6 +870,7 @@ function viewProgress() {
         h("span",{class:"habN"},e.name),
         h("span",{class:"streakVal"},icon("flame",14),`${habitStreak(e.id,today)} дни`))),
     h("h2",{class:"secT"},"Данни"),
+    exportNudge(),
     h("p",{class:"secS"},"Всичко се пази локално на това устройство. Свали резервно копие или прехвърли на друго устройство."),
     h("div",{class:"dataBtns"},
       h("button",{class:"btn",onclick:exportData},"Експорт (JSON)"),
@@ -726,6 +880,19 @@ function exportData() {
   const blob = new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
   const a = h("a",{href:URL.createObjectURL(blob),download:`zharava-backup-${dk(new Date())}.json`});
   document.body.appendChild(a); a.click(); a.remove();
+  state.lastExport = dk(new Date()); save(); render();
+}
+function exportNudge() {
+  const daysWithData = Object.keys(state.checks).length;
+  if (daysWithData < 3) return null;
+  const last = state.lastExport ? new Date(state.lastExport+"T00:00:00") : null;
+  const stale = !last || (new Date() - last) / 864e5 >= 7;
+  if (!stale) return null;
+  return h("div",{class:"card nudge"},
+    h("strong",null,"Време е за резервно копие"),
+    h("p",null, last
+      ? `Последен експорт: ${last.getDate()} ${MON[last.getMonth()]}. Данните живеят само на това устройство — свали копие.`
+      : "Още нямаш резервно копие, а данните живеят само на това устройство. Свали едно за секунди."));
 }
 function importData() {
   const inp = h("input",{type:"file",accept:"application/json",style:"display:none"});
@@ -758,7 +925,13 @@ function viewHabits() {
       editHabits
         ? h("button",{class:"del","aria-label":"Изтрий навик",onclick:()=>{
             const f=kind==="good"?"habitsGood":"habitsBad";
+            const idx=state[f].findIndex((x)=>x.id===e.id);
+            const removed=state[f][idx];
             state[f]=state[f].filter((x)=>x.id!==e.id); save(); render();
+            showToast(`Изтрит навик: ${removed.name}`, ()=>{
+              const arr=state[f].slice(); arr.splice(Math.min(idx,arr.length),0,removed);
+              state[f]=arr; save(); render();
+            });
           }},icon("x",15))
         : checkBtn(!!o[e.id],()=>toggleCheck(e.id))));
   const addRow = (kind,ph)=>{
@@ -824,7 +997,7 @@ function ring(pct,day) {
 }
 function navDay(delta) {
   const a = addDays(cur,delta);
-  if (a>=START&&a<=END){cur=a;openMeal=null;openEx=null;editPlan=false;render();}
+  if (a>=START&&a<=END){cur=a;openMeal=null;openEx=null;editPlan=false;editingTask=null;addingTask=false;render();}
 }
 
 function render() {
@@ -854,18 +1027,54 @@ function render() {
           h("button",{class:"navBtn","aria-label":"Следващ ден",disabled:key===dk(END),onclick:()=>navDay(1)},icon("chev",16))),
         h("div",{class:"hdrMeta"},
           h("span",{class:"pct"},`${Math.round(pct*100)}% от деня`),
-          !isToday?h("button",{class:"todayBtn",onclick:()=>{cur=clampDate(new Date());render();}},"към днес"):null))));
+          !isToday?h("button",{class:"todayBtn",onclick:()=>{cur=clampDate(new Date());scrollToNow=true;render();}},"към днес"):null))));
 
   const views = { today:viewToday, plan:viewPlan, calendar:viewCalendar, habits:viewHabits, progress:viewProgress };
-  const main = h("main",{class:"main"},views[tab]());
+  const main = h("main",{class:`main ${tab!==lastTab?"viewIn":""}`},views[tab]());
+  lastTab = tab;
   const nav = h("nav",{class:"nav"},
     [["today","flame","Днес"],["plan","bowl","План"],["calendar","cal","Календар"],["habits","habit","Навици"],["progress","chart","Прогрес"]]
       .map(([id,ic,lbl])=>h("button",{class:`navTab ${tab===id?"act":""}`,
-        onclick:()=>{tab=id;editPlan=false;if(id==="calendar")calMonth=mk(cur);render();window.scrollTo(0,0);}},
+        onclick:()=>{tab=id;editPlan=false;editingTask=null;addingTask=false;
+          if(id==="calendar")calMonth=mk(cur);
+          if(id==="today")scrollToNow=true;
+          render();window.scrollTo(0,0);}},
         icon(ic,20),h("span",null,lbl))));
 
   root.replaceChildren(header,main,nav);
+
+  // еднократен автоскрол до текущия момент от деня
+  if (scrollToNow && tab === "today" && isToday) {
+    scrollToNow = false;
+    requestAnimationFrame(() => {
+      const now = new Date();
+      const nowMin = now.getHours() * 60 + now.getMinutes();
+      if (nowMin < 9 * 60) return; // сутрин планът и без това започва отгоре
+      const rows = [...document.querySelectorAll(".tl [data-time]")];
+      const target = rows.find((r) => parseTimeMin(r.dataset.time) >= nowMin) || rows[rows.length - 1];
+      if (target) target.scrollIntoView({ block: "center" });
+    });
+  }
 }
+
+/* ---------- swipe за смяна на деня (Днес и План) ---------- */
+(function initSwipe() {
+  let x0 = 0, y0 = 0, t0 = 0;
+  document.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1) return;
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now();
+  }, { passive: true });
+  document.addEventListener("touchend", (e) => {
+    if (tab !== "today" && tab !== "plan") return;
+    if (e.target.closest("input,textarea,.icoPick,.calGrid")) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    const dy = e.changedTouches[0].clientY - y0;
+    if (Date.now() - t0 > 600) return;                       // бавно влачене = скрол
+    if (Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    navDay(dx < 0 ? 1 : -1);
+    window.scrollTo(0, 0);
+  }, { passive: true });
+})();
 
 setSync("запазено");
 prevPct = dayScore(cur);
