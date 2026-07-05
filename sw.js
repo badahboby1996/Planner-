@@ -1,19 +1,13 @@
-/* Жарава · Service Worker — кешира приложението за мигновено отваряне и офлайн работа */
-const CACHE = "zharava-v1";
+/* Жарава v2 · Service Worker — мигновено отваряне + офлайн */
+const CACHE = "zharava-v3";
 const ASSETS = [
-  "./",
-  "./index.html",
-  "./css/style.css",
-  "./js/data.js",
-  "./js/app.js",
-  "./icon.svg",
-  "./manifest.webmanifest",
+  "./", "./index.html", "./style.css", "./app.js",
+  "./data-2026-07.js", "./bg-embers.webp",
+  "./icon.svg", "./manifest.webmanifest",
 ];
-
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
-
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys()
@@ -21,8 +15,6 @@ self.addEventListener("activate", (e) => {
       .then(() => self.clients.claim())
   );
 });
-
-/* Стратегия: кешът първи (мигновено), после тихо обновяване от мрежата */
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   e.respondWith(
