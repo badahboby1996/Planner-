@@ -174,11 +174,11 @@ function initEmbers() {
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
   const W = () => window.innerWidth, H = () => window.innerHeight;
-  const N = Math.min(26, Math.round(W()/22));
+  const N = Math.min(48, Math.round(W()/12));
   for (let i=0;i<N;i++) embers.push({
-    x: Math.random()*W(), y: H()*0.5 + Math.random()*H()*0.55,
-    r: .8+Math.random()*2.2, vy: .12+Math.random()*.5, vx:(Math.random()-.5)*.18,
-    a: .15+Math.random()*.5, tw: Math.random()*Math.PI*2 });
+    x: Math.random()*W(), y: Math.random()*H(),
+    r: 1+Math.random()*2.8, vy: .25+Math.random()*.85, vx:(Math.random()-.5)*.3,
+    a: .35+Math.random()*.55, tw: Math.random()*Math.PI*2 });
   let last = 0;
   (function loop(ts) {
     requestAnimationFrame(loop);
@@ -189,10 +189,10 @@ function initEmbers() {
     for (const p of embers) {
       p.y -= p.vy * (1 + glow*1.4); p.x += p.vx; p.tw += .05;
       if (p.y < -8) { p.y = H()+8; p.x = Math.random()*W(); }
-      const alpha = p.a * (0.5+0.5*Math.sin(p.tw)) * (0.55 + glow*.7);
+      const alpha = p.a * (0.5+0.5*Math.sin(p.tw)) * (0.9 + glow*.4);
       ctx2d.beginPath(); ctx2d.arc(p.x,p.y,p.r,0,7);
       ctx2d.fillStyle = `rgba(255,${120+Math.round(60*Math.sin(p.tw))},40,${alpha.toFixed(3)})`;
-      ctx2d.shadowColor = "rgba(255,77,20,.8)"; ctx2d.shadowBlur = 6;
+      ctx2d.shadowColor = "rgba(255,77,20,.8)"; ctx2d.shadowBlur = 10;
       ctx2d.fill(); ctx2d.shadowBlur = 0;
     }
     // искри от отметки
@@ -378,7 +378,7 @@ function viewToday() {
         onclick:(ev)=>{ if((k.rate||0)<e) burst(ev.clientX,ev.clientY); setRefl({rate:k.rate===e?0:e}); render(); }},icon("flame",24)))),
       reflArea("Какво проработи",k.plus,"Едно нещо, което свърши работа днес…",(v)=>setRefl({plus:v})),
       reflArea("Какво не проработи",k.minus,"Без извинения — какво се разпадна…",(v)=>setRefl({minus:v})),
-      reflArea("Бележка към бъдещия ти",k.note,"Мисъл, идея за контент, каквото и да е…",(v)=>setRefl({note:v}))));
+      reflArea("Бележка към бъдещия ти",k.note,"Мисъл, идея за контент, каквото и да ��…",(v)=>setRefl({note:v}))));
 
   requestAnimationFrame(()=>statEls.forEach(([el,v])=>countUp(el,v)));
   return sec;
@@ -872,4 +872,5 @@ prevPct = dayScore(cur);
 initEmbers();
 render();
 })();
+
 
