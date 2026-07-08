@@ -50,8 +50,14 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
   box-shadow:0 8px 32px -12px rgba(255,77,20,calc(var(--glow)*.55));
   transition:box-shadow .8s ease}
 .hdrTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.brand{display:flex;gap:6px;align-items:center;font-family:var(--font-display);font-weight:900;font-size:12px;letter-spacing:.28em;color:var(--ember);
-  filter:drop-shadow(0 0 calc(var(--glow)*9px) rgba(255,77,20,.8))}
+.brand{display:flex;gap:6px;align-items:center}
+.brand svg{color:var(--ember);flex-shrink:0;filter:drop-shadow(0 0 calc(var(--glow)*9px) rgba(255,77,20,.8))}
+.brandTxt{font-family:var(--font-display);font-weight:900;font-size:13px;letter-spacing:.24em;
+  color:#0a0705;-webkit-text-stroke:.3px rgba(255,70,25,.35);
+  animation:hustleBurn 1.8s ease-in-out infinite}
+@keyframes hustleBurn{
+  0%,100%{text-shadow:0 0 4px rgba(255,70,20,.8),0 0 10px rgba(255,40,10,.55),0 0 18px rgba(255,15,0,.35)}
+  50%{text-shadow:0 0 9px rgba(255,110,40,1),0 0 19px rgba(255,60,15,.85),0 0 32px rgba(255,20,0,.55)}}
 .sync{font-size:11.5px;color:var(--mut);letter-spacing:.05em}
 .sync.err{color:#ff7b5c}
 .hdrMain{display:flex;gap:14px;align-items:center}
@@ -91,16 +97,24 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .card.done{border-color:rgba(255,184,107,.35);background:linear-gradient(rgba(255,120,40,.06),rgba(255,120,40,.02)),rgba(23,18,16,.72)}
 
 /* stats */
-.stats{display:flex;gap:8px}
+.stats{display:flex;gap:8px;margin-bottom:10px}
 .stat{flex:1;background:rgba(23,18,16,.72);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
 .stat b{font-family:var(--font-display);font-size:17px;color:var(--amber);display:block}
 .stat span{font-size:10px;color:var(--mut)}
 
-/* тема на седмицата */
-.themeBan{background:linear-gradient(120deg, rgba(255,77,20,.16), rgba(255,184,107,.05)),rgba(23,18,16,.72);
-  border:1px solid rgba(255,77,20,.3);border-radius:16px;padding:11px 14px;margin-bottom:12px;
-  font-size:12.5px;line-height:1.5}
-.themeBan b{color:var(--amber);font-family:var(--font-display);font-size:11px;letter-spacing:.08em;display:block;margin-bottom:3px}
+/* цитат на седмицата */
+.quoteBan{background:linear-gradient(120deg, rgba(255,77,20,.16), rgba(255,184,107,.05)),rgba(23,18,16,.72);
+  border:1px solid rgba(255,77,20,.3);border-radius:16px;padding:12px 14px;margin-bottom:12px}
+.quoteBan b{color:var(--amber);font-family:var(--font-display);font-size:11px;letter-spacing:.08em;display:block;margin-bottom:6px}
+.quoteTxt{font-size:14px;line-height:1.5;font-weight:600;font-style:italic;color:var(--text)}
+.quoteAuthor{display:block;margin-top:6px;font-size:11.5px;color:var(--mut);font-weight:700;letter-spacing:.02em}
+
+/* habit chips (общо пъти) на дашборда */
+.habitChips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;margin-bottom:2px;scrollbar-width:none}
+.habitChips::-webkit-scrollbar{display:none}
+.habitChip{flex:0 0 auto;min-width:66px;background:rgba(23,18,16,.72);border:1px solid var(--line);border-radius:14px;padding:9px 12px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.habitChip b{font-family:var(--font-display);font-size:15px;color:var(--amber)}
+.habitChip span{font-size:9.5px;color:var(--mut);white-space:nowrap}
 
 /* timeline */
 .tl{display:flex;flex-direction:column;gap:8px}
@@ -279,10 +293,15 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .wDelta{font-size:12px;color:var(--amber);font-weight:700;margin-top:6px}
 
 /* пазарски списък */
+.shopTripT{font-family:var(--font-display);font-weight:800;font-size:12.5px;color:var(--amber);margin:18px 0 2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.shopTripT:first-child{margin-top:2px}
 .shopCat{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ember);font-weight:800;margin:12px 0 6px}
 .shopItem{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(44,35,28,.5);font-size:13px}
 .shopItem:last-child{border-bottom:none}
 .shopItem.on{color:var(--mut);text-decoration:line-through}
+.shopItem>span{flex:1;min-width:0}
+.shopItem.extra{gap:8px}
+.shopWho{font-style:italic;color:var(--mut);font-size:11.5px}
 
 /* toast (изтрито · върни) */
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));
@@ -300,9 +319,10 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;display:flex;z-index:20;
   background:rgba(15,12,10,.78);backdrop-filter:blur(16px);border-top:1px solid var(--line);
   box-shadow:0 -10px 30px -16px rgba(255,77,20,calc(var(--glow)*.6));transition:box-shadow .8s ease;
-  padding:8px 6px calc(10px + env(safe-area-inset-bottom))}
-.navTab{flex:1;display:flex;flex-direction:column;gap:3px;align-items:center;padding:6px 2px;color:var(--mut);border-radius:12px;transition:color .2s}
-.navTab span{font-size:10.5px;font-weight:700;letter-spacing:.03em}
+  padding:8px 3px calc(10px + env(safe-area-inset-bottom))}
+.navTab{flex:1;display:flex;flex-direction:column;gap:3px;align-items:center;padding:6px 1px;color:var(--mut);border-radius:12px;transition:color .2s;min-width:0}
+.navTab svg{flex-shrink:0}
+.navTab span{font-size:9.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap}
 .navTab.act{color:var(--ember)}
 .navTab.act svg{filter:drop-shadow(0 0 6px rgba(255,77,20,.55))}
 .navTab:active{transform:scale(.93)}
