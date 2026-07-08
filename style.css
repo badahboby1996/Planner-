@@ -43,12 +43,12 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .skelRing,.skelLines i,.skelCard{background:linear-gradient(100deg,#171210 40%,#241b14 50%,#171210 60%);background-size:220% 100%;animation:shimmer 1.3s linear infinite}
 @keyframes shimmer{from{background-position:130% 0}to{background-position:-90% 0}}
 
-/* header — стъклен, полупрозрачен, за да прозира жаравата зад него */
+/* header — iOS-style translucent material: почти прелива с фона, само лек намек за праг */
 .hdr{padding:14px 16px 10px;position:sticky;top:0;z-index:10;
-  background:linear-gradient(rgba(30,20,15,.38),rgba(20,14,11,.24));
-  backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);
-  border-bottom:1px solid rgba(255,180,120,.12);
-  box-shadow:inset 0 1px 0 rgba(255,220,190,.09), 0 8px 32px -12px rgba(255,77,20,calc(.22 + var(--glow)*.55));
+  background:linear-gradient(rgba(24,17,13,.24),rgba(16,11,9,.15));
+  backdrop-filter:blur(36px) saturate(1.9);-webkit-backdrop-filter:blur(36px) saturate(1.9);
+  border-bottom:1px solid rgba(255,255,255,.045);
+  box-shadow:inset 0 1px 0 rgba(255,235,210,.06), 0 10px 26px -18px rgba(255,77,20,calc(.14 + var(--glow)*.4));
   transition:box-shadow .8s ease, background .8s ease}
 .hdrTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .brand{display:flex;gap:6px;align-items:center}
@@ -68,7 +68,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .ringOf{font-size:10px;color:var(--mut);margin-top:2px}
 .hdrInfo{flex:1;min-width:0}
 .dateNav{display:flex;align-items:center;gap:8px}
-.navBtn{position:relative;width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.05);backdrop-filter:blur(10px);border:1px solid rgba(255,190,140,.14);display:flex;align-items:center;justify-content:center;color:var(--mut);transition:all .15s}
+.navBtn{position:relative;width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.03);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;color:var(--mut);transition:all .15s}
 .navBtn::after{content:"";position:absolute;inset:-6px}
 .navBtn:active:not(:disabled){transform:scale(.9);color:var(--ember);background:rgba(255,120,40,.14)}
 .navBtn:disabled{opacity:.3}
@@ -316,18 +316,18 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .toast.out{opacity:0;transform:translateX(-50%) translateY(8px);transition:all .3s ease}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%)}}
 
-/* nav — стъклена, в тон с горната лента, но с малко повече плътност за четимост над скрола */
+/* nav — iOS-style translucent material, в тон с горната лента; blur-ът носи четимостта, не плътността */
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;display:flex;z-index:20;
-  background:linear-gradient(rgba(22,15,12,.46),rgba(15,10,8,.6));
-  backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);
-  border-top:1px solid rgba(255,180,120,.12);
-  box-shadow:inset 0 1px 0 rgba(255,220,190,.07), 0 -10px 30px -16px rgba(255,77,20,calc(.2 + var(--glow)*.6));
+  background:linear-gradient(rgba(18,12,10,.2),rgba(14,10,8,.32));
+  backdrop-filter:blur(36px) saturate(1.9);-webkit-backdrop-filter:blur(36px) saturate(1.9);
+  border-top:1px solid rgba(255,255,255,.045);
+  box-shadow:inset 0 1px 0 rgba(255,235,210,.05), 0 -10px 24px -18px rgba(255,77,20,calc(.14 + var(--glow)*.4));
   transition:box-shadow .8s ease, background .8s ease;
   padding:8px 3px calc(10px + env(safe-area-inset-bottom))}
 .navTab{flex:1;display:flex;flex-direction:column;gap:3px;align-items:center;padding:6px 1px;color:var(--mut);border-radius:12px;transition:color .2s, background .2s;min-width:0}
-.navTab svg{flex-shrink:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))}
-.navTab span{font-size:9.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.85)}
-.navTab.act{color:var(--ember);background:rgba(255,120,40,.13)}
+.navTab svg{flex-shrink:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,.75))}
+.navTab span{font-size:9.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.9)}
+.navTab.act{color:var(--ember);background:rgba(255,120,40,.12)}
 .navTab.act svg{filter:drop-shadow(0 0 6px rgba(255,77,20,.55))}
 .navTab:active{transform:scale(.93)}
 
