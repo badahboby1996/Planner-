@@ -45,10 +45,10 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 
 /* header — iOS-style translucent material: почти прелива с фона, само лек намек за праг */
 .hdr{padding:14px 16px 10px;position:sticky;top:0;z-index:10;
-  background:linear-gradient(rgba(24,17,13,.24),rgba(16,11,9,.15));
-  backdrop-filter:blur(36px) saturate(1.9);-webkit-backdrop-filter:blur(36px) saturate(1.9);
-  border-bottom:1px solid rgba(255,255,255,.045);
-  box-shadow:inset 0 1px 0 rgba(255,235,210,.06), 0 10px 26px -18px rgba(255,77,20,calc(.14 + var(--glow)*.4));
+  background:linear-gradient(rgba(24,17,13,.16),rgba(16,11,9,.09));
+  backdrop-filter:blur(42px) saturate(2.1);-webkit-backdrop-filter:blur(42px) saturate(2.1);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  box-shadow:inset 0 1px 0 rgba(255,235,210,.09), 0 10px 26px -18px rgba(255,77,20,calc(.16 + var(--glow)*.4));
   transition:box-shadow .8s ease, background .8s ease}
 .hdrTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .brand{display:flex;gap:6px;align-items:center}
@@ -318,15 +318,15 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 
 /* nav — iOS-style translucent material, в тон с горната лента; blur-ът носи четимостта, не плътността */
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;display:flex;z-index:20;
-  background:linear-gradient(rgba(18,12,10,.2),rgba(14,10,8,.32));
-  backdrop-filter:blur(36px) saturate(1.9);-webkit-backdrop-filter:blur(36px) saturate(1.9);
-  border-top:1px solid rgba(255,255,255,.045);
-  box-shadow:inset 0 1px 0 rgba(255,235,210,.05), 0 -10px 24px -18px rgba(255,77,20,calc(.14 + var(--glow)*.4));
+  background:linear-gradient(rgba(16,11,9,.1),rgba(12,9,7,.4) 55%,rgba(10,7,6,.5));
+  backdrop-filter:blur(42px) saturate(2.1);-webkit-backdrop-filter:blur(42px) saturate(2.1);
+  border-top:1px solid rgba(255,255,255,.07);
+  box-shadow:inset 0 1px 0 rgba(255,235,210,.08), 0 -10px 24px -18px rgba(255,77,20,calc(.16 + var(--glow)*.4));
   transition:box-shadow .8s ease, background .8s ease;
   padding:8px 3px calc(10px + env(safe-area-inset-bottom))}
 .navTab{flex:1;display:flex;flex-direction:column;gap:3px;align-items:center;padding:6px 1px;color:var(--mut);border-radius:12px;transition:color .2s, background .2s;min-width:0}
-.navTab svg{flex-shrink:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,.75))}
-.navTab span{font-size:9.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.9)}
+.navTab svg{flex-shrink:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,.85))}
+.navTab span{font-size:9.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;text-shadow:0 1px 5px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.6)}
 .navTab.act{color:var(--ember);background:rgba(255,120,40,.12)}
 .navTab.act svg{filter:drop-shadow(0 0 6px rgba(255,77,20,.55))}
 .navTab:active{transform:scale(.93)}
