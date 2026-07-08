@@ -43,12 +43,13 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .skelRing,.skelLines i,.skelCard{background:linear-gradient(100deg,#171210 40%,#241b14 50%,#171210 60%);background-size:220% 100%;animation:shimmer 1.3s linear infinite}
 @keyframes shimmer{from{background-position:130% 0}to{background-position:-90% 0}}
 
-/* header */
+/* header — стъклен, полупрозрачен, за да прозира жаравата зад него */
 .hdr{padding:14px 16px 10px;position:sticky;top:0;z-index:10;
-  background:linear-gradient(rgba(12,10,9,.82),rgba(12,10,9,.66));backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
-  box-shadow:0 8px 32px -12px rgba(255,77,20,calc(var(--glow)*.55));
-  transition:box-shadow .8s ease}
+  background:linear-gradient(rgba(30,20,15,.38),rgba(20,14,11,.24));
+  backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);
+  border-bottom:1px solid rgba(255,180,120,.12);
+  box-shadow:inset 0 1px 0 rgba(255,220,190,.09), 0 8px 32px -12px rgba(255,77,20,calc(.22 + var(--glow)*.55));
+  transition:box-shadow .8s ease, background .8s ease}
 .hdrTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .brand{display:flex;gap:6px;align-items:center}
 .brand svg{color:var(--ember);flex-shrink:0;filter:drop-shadow(0 0 calc(var(--glow)*9px) rgba(255,77,20,.8))}
@@ -67,9 +68,9 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .ringOf{font-size:10px;color:var(--mut);margin-top:2px}
 .hdrInfo{flex:1;min-width:0}
 .dateNav{display:flex;align-items:center;gap:8px}
-.navBtn{position:relative;width:34px;height:34px;border-radius:11px;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--mut);transition:all .15s}
+.navBtn{position:relative;width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.05);backdrop-filter:blur(10px);border:1px solid rgba(255,190,140,.14);display:flex;align-items:center;justify-content:center;color:var(--mut);transition:all .15s}
 .navBtn::after{content:"";position:absolute;inset:-6px}
-.navBtn:active:not(:disabled){transform:scale(.9);color:var(--ember)}
+.navBtn:active:not(:disabled){transform:scale(.9);color:var(--ember);background:rgba(255,120,40,.14)}
 .navBtn:disabled{opacity:.3}
 .dateLbl{flex:1;text-align:center;display:flex;flex-direction:column}
 .dateLblWrap{position:relative;cursor:pointer}
