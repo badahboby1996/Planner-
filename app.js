@@ -102,6 +102,7 @@ function loadState() {
   } catch (e) { return empty; }
 }
 function save() {
+  clearStatCache();               // данните се промениха — тежките сметки се правят наново
   clearTimeout(saveTimer); setSync("запис…");
   saveTimer = setTimeout(() => {
     try { localStorage.setItem(LS_KEY, JSON.stringify(state)); setSync("запазено"); }
@@ -309,22 +310,47 @@ function showToast(msg, undoFn) {
 const emberCanvas = document.getElementById("embers");
 const ctx2d = emberCanvas ? emberCanvas.getContext("2d") : null;
 let embers = [], sparks = [];
+let glowNow = 0;                 // копие на --glow за анимацията — без getComputedStyle на всеки кадър
+let vw = window.innerWidth, vh = window.innerHeight;
 const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 function resizeCanvas() {
   if (!emberCanvas) return;
-  emberCanvas.width = window.innerWidth * devicePixelRatio;
-  emberCanvas.height = window.innerHeight * devicePixelRatio;
+  vw = window.innerWidth; vh = window.innerHeight;
+  emberCanvas.width = vw * devicePixelRatio;
+  emberCanvas.height = vh * devicePixelRatio;
   ctx2d.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+/* Спрайтове на частиците: кръгчето със сиянието (shadowBlur) се рисува
+   веднъж в малък offscreen canvas и после само се копира с drawImage —
+   същият вид, в пъти по-евтино от shadowBlur на всеки кадър. */
+const spriteCache = new Map();
+function emberSprite(r, g) {
+  const key = r + ":" + g;
+  let c = spriteCache.get(key);
+  if (!c) {
+    const size = Math.ceil((r + 12) * 2), dpr = devicePixelRatio || 1; // 12 = shadowBlur 10 + резерв
+    c = document.createElement("canvas");
+    c.width = c.height = Math.ceil(size * dpr);
+    c._size = size;
+    const x = c.getContext("2d");
+    x.scale(dpr, dpr);
+    x.beginPath(); x.arc(size/2, size/2, r, 0, 7);
+    x.fillStyle = `rgba(255,${g},40,1)`;
+    x.shadowColor = "rgba(255,77,20,.8)"; x.shadowBlur = 10;
+    x.fill();
+    spriteCache.set(key, c);
+  }
+  return c;
 }
 function initEmbers() {
   if (!ctx2d || REDUCED) return;
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
-  const W = () => window.innerWidth, H = () => window.innerHeight;
-  const N = Math.min(68, Math.round(W()/9));
+  const N = Math.min(68, Math.round(vw/9));
   for (let i=0;i<N;i++) embers.push({
-    x: Math.random()*W(), y: Math.random()*H(),
-    r: 1.1+Math.random()*3.1, vy: .25+Math.random()*.85, vx:(Math.random()-.5)*.3,
+    x: Math.random()*vw, y: Math.random()*vh,
+    r: Math.round((1.1+Math.random()*3.1)*4)/4, // радиус на стъпки от 0.25px — за да се преизползват спрайтовете
+    vy: .25+Math.random()*.85, vx:(Math.random()-.5)*.3,
     a: .45+Math.random()*.55, tw: Math.random()*Math.PI*2 });
   let last = 0;
   (function loop(ts) {
@@ -332,17 +358,18 @@ function initEmbers() {
     if (document.hidden) return;       // таб на заден план -> нула работа
     if (ts - last < 40) return; // ~25 fps — пести батерия
     last = ts;
-    ctx2d.clearRect(0,0,W(),H());
-    const glow = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--glow")) || 0;
+    ctx2d.clearRect(0,0,vw,vh);
+    const glow = glowNow;
     for (const p of embers) {
       p.y -= p.vy * (1 + glow*1.4); p.x += p.vx; p.tw += .05;
-      if (p.y < -8) { p.y = H()+8; p.x = Math.random()*W(); }
-      const alpha = p.a * (0.5+0.5*Math.sin(p.tw)) * (0.9 + glow*.4);
-      ctx2d.beginPath(); ctx2d.arc(p.x,p.y,p.r,0,7);
-      ctx2d.fillStyle = `rgba(255,${120+Math.round(60*Math.sin(p.tw))},40,${alpha.toFixed(3)})`;
-      ctx2d.shadowColor = "rgba(255,77,20,.8)"; ctx2d.shadowBlur = 10;
-      ctx2d.fill(); ctx2d.shadowBlur = 0;
+      if (p.y < -8) { p.y = vh+8; p.x = Math.random()*vw; }
+      const tw = Math.sin(p.tw);
+      const alpha = p.a * (0.5+0.5*tw) * (0.9 + glow*.4);
+      const spr = emberSprite(p.r, 120 + Math.round(6*tw)*10); // цветът на стъпки от 10 — незабележимо, малко спрайтове
+      ctx2d.globalAlpha = Math.min(alpha, 1);
+      ctx2d.drawImage(spr, p.x - spr._size/2, p.y - spr._size/2, spr._size, spr._size);
     }
+    ctx2d.globalAlpha = 1;
     // искри от отметки
     for (let i=sparks.length-1;i>=0;i--) {
       const s = sparks[i];
@@ -379,8 +406,23 @@ function countUp(el, target) {
 }
 
 /* ---------- изчисления ---------- */
+/* Кеш на тежките сметки (dayScore/totals/серии/навици). Резултатите се
+   пазят между рендерите и се изчистват при всяка промяна на данните
+   (save) и на нов ден — така приложението остава еднакво бързо и при
+   180 дни натрупани данни. */
+let statCache = { day: dk(new Date()), map: new Map() };
+function memoStat(key, fn) {
+  const today = dk(new Date());
+  if (statCache.day !== today) statCache = { day: today, map: new Map() };
+  let v = statCache.map.get(key);
+  if (v === undefined) { v = fn(); statCache.map.set(key, v); }
+  return v;
+}
+function clearStatCache() { statCache.map.clear(); }
+
 const dayChecks = (key) => state.checks[key] || {};
-function dayScore(dateObj) {
+function dayScore(dateObj) { return memoStat("score:"+dk(dateObj), () => dayScoreCalc(dateObj)); }
+function dayScoreCalc(dateObj) {
   const key = dk(dateObj), o = dayChecks(key);
   const w = workoutFor(dateObj);
   const parts = [!!o.wake];
@@ -393,7 +435,8 @@ function dayScore(dateObj) {
   (state.tasks[key]||[]).forEach((t)=>parts.push(!!t.done));
   return parts.filter(Boolean).length / parts.length;
 }
-function totals() {
+function totals() { return memoStat("totals", totalsCalc); }
+function totalsCalc() {
   let workouts = 0, meals = 0, videos = 0;
   for (const key of Object.keys(state.checks)) {
     const u = state.checks[key];
@@ -415,16 +458,20 @@ function totals() {
 }
 // общо колко пъти е отметнат навикът досега (не поредни дни — колкото пъти изобщо си го направил)
 function habitCount(id) {
-  let n = 0;
-  for (const key in state.checks) if (state.checks[key][id]) n++;
-  return n;
+  return memoStat("hab:"+id, () => {
+    let n = 0;
+    for (const key in state.checks) if (state.checks[key][id]) n++;
+    return n;
+  });
 }
 /* ---------- четене: страници за деня + общо ---------- */
 const readPages = (key) => (state.reading && +state.reading[key]) || 0;
 function totalPages() {
-  let n = 0;
-  for (const key in state.reading) n += (+state.reading[key] || 0);
-  return n;
+  return memoStat("pages", () => {
+    let n = 0;
+    for (const key in state.reading) n += (+state.reading[key] || 0);
+    return n;
+  });
 }
 function setReadPages(key, val) {
   val = Math.max(0, Math.min(99999, Math.round(val) || 0));
@@ -462,18 +509,22 @@ const BADGES = [
   { id:"b8", ico:"✍️", name:"20 рефлексии", test:()=>totals().refls>=20 },
 ];
 function anyDayFull() {
-  const today = clampDate(new Date());
-  for (let d = new Date(START); d <= today; d = addDays(d,1)) if (dayScore(d) >= 0.999) return true;
-  return false;
+  return memoStat("anyFull", () => {
+    const today = clampDate(new Date());
+    for (let d = new Date(START); d <= today; d = addDays(d,1)) if (dayScore(d) >= 0.999) return true;
+    return false;
+  });
 }
 function bestStreak() {
-  const today = clampDate(new Date());
-  let best = 0, run = 0;
-  for (let d = new Date(START); d <= today; d = addDays(d,1)) {
-    run = dayScore(d) >= 0.6 ? run+1 : 0;
-    if (run > best) best = run;
-  }
-  return best;
+  return memoStat("bestStreak", () => {
+    const today = clampDate(new Date());
+    let best = 0, run = 0;
+    for (let d = new Date(START); d <= today; d = addDays(d,1)) {
+      run = dayScore(d) >= 0.6 ? run+1 : 0;
+      if (run > best) best = run;
+    }
+    return best;
+  });
 }
 
 /* ============================================================
@@ -1176,6 +1227,7 @@ function render() {
   const pct = dayScore(cur);
   const isToday = key===dk(clampDate(new Date()));
   document.documentElement.style.setProperty("--glow",pct.toFixed(2));
+  glowNow = pct;
 
   const chevLeft = h("span",{style:"transform:rotate(180deg);display:inline-flex"},icon("chev",16));
   const header = h("header",{class:"hdr"},
