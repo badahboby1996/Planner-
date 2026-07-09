@@ -43,18 +43,19 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .skelRing,.skelLines i,.skelCard{background:linear-gradient(100deg,#171210 40%,#241b14 50%,#171210 60%);background-size:220% 100%;animation:shimmer 1.3s linear infinite}
 @keyframes shimmer{from{background-position:130% 0}to{background-position:-90% 0}}
 
-/* header — премиум frosted glass (Apple-style): по-прозрачно стъкло с ярък ръб и мека дълбочина */
+/* header — премиум frosted glass (Apple-style): силно прозрачно стъкло, ярък ръб и мека дълбочина за разделеност */
 .hdr{padding:14px 16px 10px;position:sticky;top:0;z-index:10;
   background:
-    linear-gradient(rgba(255,255,255,.06),rgba(255,255,255,.015) 60%,rgba(255,255,255,0)),
-    linear-gradient(rgba(20,14,11,.22),rgba(14,10,8,.10));
-  backdrop-filter:blur(34px) saturate(2) brightness(1.06);
-  -webkit-backdrop-filter:blur(34px) saturate(2) brightness(1.06);
-  border-bottom:1px solid rgba(255,255,255,.11);
+    linear-gradient(rgba(255,255,255,.09),rgba(255,255,255,.025) 55%,rgba(255,255,255,0)),
+    linear-gradient(rgba(16,11,9,.10),rgba(10,8,6,.04));
+  backdrop-filter:blur(44px) saturate(2.3) brightness(1.1);
+  -webkit-backdrop-filter:blur(44px) saturate(2.3) brightness(1.1);
+  border-bottom:1px solid rgba(255,255,255,.14);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    inset 0 -1px 0 rgba(0,0,0,.16),
-    0 12px 34px -22px rgba(255,77,20,calc(.18 + var(--glow)*.4));
+    inset 0 1px 0 rgba(255,255,255,.24),
+    inset 0 -1px 0 rgba(0,0,0,.12),
+    0 16px 38px -22px rgba(0,0,0,.55),
+    0 16px 42px -28px rgba(255,77,20,calc(.2 + var(--glow)*.4));
   transition:box-shadow .8s ease, background .8s ease}
 .hdrTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .brand{display:flex;gap:6px;align-items:center}
@@ -339,15 +340,16 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 /* nav — премиум frosted glass в тон с горната лента; blur-ът носи четимостта, не плътността */
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;display:flex;z-index:20;
   background:
-    linear-gradient(rgba(255,255,255,.055),rgba(255,255,255,.01) 45%,rgba(255,255,255,0)),
-    linear-gradient(rgba(16,11,9,.14),rgba(12,9,7,.30) 55%,rgba(10,7,6,.40));
-  backdrop-filter:blur(34px) saturate(2) brightness(1.05);
-  -webkit-backdrop-filter:blur(34px) saturate(2) brightness(1.05);
-  border-top:1px solid rgba(255,255,255,.11);
+    linear-gradient(rgba(255,255,255,.08),rgba(255,255,255,.02) 45%,rgba(255,255,255,0)),
+    linear-gradient(rgba(16,11,9,.10),rgba(12,9,7,.20) 55%,rgba(10,7,6,.30));
+  backdrop-filter:blur(44px) saturate(2.3) brightness(1.08);
+  -webkit-backdrop-filter:blur(44px) saturate(2.3) brightness(1.08);
+  border-top:1px solid rgba(255,255,255,.14);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.16),
-    inset 0 -1px 0 rgba(0,0,0,.20),
-    0 -12px 30px -22px rgba(255,77,20,calc(.18 + var(--glow)*.4));
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -1px 0 rgba(0,0,0,.16),
+    0 -16px 36px -22px rgba(0,0,0,.55),
+    0 -16px 40px -28px rgba(255,77,20,calc(.2 + var(--glow)*.4));
   transition:box-shadow .8s ease, background .8s ease;
   padding:8px 3px calc(10px + env(safe-area-inset-bottom))}
 .navTab{flex:1;display:flex;flex-direction:column;gap:3px;align-items:center;padding:6px 1px;color:var(--mut);border-radius:12px;transition:color .2s, background .2s;min-width:0}
