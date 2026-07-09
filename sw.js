@@ -1,5 +1,5 @@
 /* Жарава v2 · Service Worker — мигновено отваряне + офлайн */
-const CACHE = "zharava-v15";
+const CACHE = "zharava-v16";
 const ASSETS = [
   "./", "./index.html", "./style.css", "./app.js",
   "./data-2026-07.js", "./bg-embers.webp",

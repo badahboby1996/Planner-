@@ -43,16 +43,15 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .skelRing,.skelLines i,.skelCard{background:linear-gradient(100deg,#171210 40%,#241b14 50%,#171210 60%);background-size:220% 100%;animation:shimmer 1.3s linear infinite}
 @keyframes shimmer{from{background-position:130% 0}to{background-position:-90% 0}}
 
-/* header — почти чисто стъкло: минимален слой, силен blur; едва се отделя от фона, но има ръб за разделеност */
+/* header — прозрачно стъкло с лек blur: текстът отдолу прозира и почти се чете; панелът се слива с основата, само тънък намек за ръб */
 .hdr{padding:14px 16px 10px;position:sticky;top:0;z-index:10;
-  background:linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.012) 60%,rgba(255,255,255,0));
-  backdrop-filter:blur(30px) saturate(1.9) brightness(1.04);
-  -webkit-backdrop-filter:blur(30px) saturate(1.9) brightness(1.04);
-  border-bottom:1px solid rgba(255,255,255,.09);
+  background:linear-gradient(rgba(255,255,255,.03),rgba(255,255,255,.008) 60%,rgba(255,255,255,0));
+  backdrop-filter:blur(7px) saturate(1.5);
+  -webkit-backdrop-filter:blur(7px) saturate(1.5);
+  border-bottom:1px solid rgba(255,255,255,.06);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.16),
-    0 10px 30px -24px rgba(0,0,0,.5),
-    0 12px 34px -30px rgba(255,77,20,calc(.16 + var(--glow)*.4));
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 8px 24px -22px rgba(0,0,0,.45);
   transition:box-shadow .8s ease, background .8s ease}
 .hdrTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .brand{display:flex;gap:6px;align-items:center}
@@ -334,16 +333,15 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .toast.out{opacity:0;transform:translateX(-50%) translateY(8px);transition:all .3s ease}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%)}}
 
-/* nav — почти чисто стъкло в тон с горната лента; blur-ът носи четимостта, не плътността */
+/* nav — прозрачно стъкло с лек blur в тон с горната лента; текстът отдолу прозира */
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;display:flex;z-index:20;
-  background:linear-gradient(rgba(255,255,255,.055),rgba(255,255,255,.012) 50%,rgba(255,255,255,0));
-  backdrop-filter:blur(30px) saturate(1.9) brightness(1.04);
-  -webkit-backdrop-filter:blur(30px) saturate(1.9) brightness(1.04);
-  border-top:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(rgba(255,255,255,.035),rgba(255,255,255,.008) 50%,rgba(255,255,255,0));
+  backdrop-filter:blur(7px) saturate(1.5);
+  -webkit-backdrop-filter:blur(7px) saturate(1.5);
+  border-top:1px solid rgba(255,255,255,.07);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    0 -10px 30px -24px rgba(0,0,0,.5),
-    0 -12px 34px -30px rgba(255,77,20,calc(.16 + var(--glow)*.4));
+    inset 0 1px 0 rgba(255,255,255,.11),
+    0 -8px 24px -22px rgba(0,0,0,.45);
   transition:box-shadow .8s ease, background .8s ease;
   padding:8px 3px calc(10px + env(safe-area-inset-bottom))}
 .navTab{flex:1;display:flex;flex-direction:column;gap:3px;align-items:center;padding:6px 1px;color:var(--mut);border-radius:12px;transition:color .2s, background .2s;min-width:0}
