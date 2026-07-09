@@ -1,5 +1,5 @@
-/* Жарава v2 · Service Worker — мигновено отваряне + офлайн */
-const CACHE = "zharava-v16";
+/* Жарава v2 · Service Worker — първо мрежа (винаги пресни файлове), кеш само офлайн */
+const CACHE = "zharava-v17";
 const ASSETS = [
   "./", "./index.html", "./style.css", "./app.js",
   "./data-2026-07.js", "./bg-embers.webp",
@@ -15,21 +15,22 @@ self.addEventListener("activate", (e) => {
       .then(() => self.clients.claim())
   );
 });
+/* Network-first: винаги пробваме мрежата (с revalidate, за да прескочим HTTP кеша),
+   пазим свежо копие и падаме на кеша само когато няма мрежа. Така новите версии
+   се виждат веднага след публикуване, без да зависим от стар кеш. */
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+  const sameOrigin = new URL(e.request.url).origin === self.location.origin;
+  const req = sameOrigin ? new Request(e.request, { cache: "no-cache" }) : e.request;
   e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const fresh = fetch(e.request)
-        .then((res) => {
-          if (res && res.status === 200 && (e.request.url.startsWith(self.location.origin) || e.request.url.includes("fonts."))) {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(e.request, copy));
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || fresh;
-    })
+    fetch(req)
+      .then((res) => {
+        if (res && res.status === 200 && (sameOrigin || e.request.url.includes("fonts."))) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(e.request, copy));
+        }
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
-
