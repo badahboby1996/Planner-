@@ -18,9 +18,10 @@ const DOW = ["Неделя","Понеделник","Вторник","Сряда"
 const DOW_S = ["Пн","Вт","Ср","Чт","Пт","Сб","Нд"];
 const MON = ["яну","фев","мар","апр","май","юни","юли","авг","сеп","окт","ное","дек"];
 const MON_F = ["Януари","Февруари","Март","Април","Май","Юни","Юли","Август","Септември","Октомври","Ноември","Декември"];
+const READING_ID = "hg2"; // навикът за четене се брои по страници, не по дни
 const DEFAULT_HABITS_GOOD = [
   { id: "hg0", name: "Ставане 05:30–06:00" }, { id: "hg1", name: "Развиване на умение" },
-  { id: "hg2", name: "Четене 20 страници" }, { id: "hg3", name: "Спорт / движение" },
+  { id: READING_ID, name: "Четене на книга" }, { id: "hg3", name: "Спорт / движение" },
   { id: "hg4", name: "Здравословно готвене" }];
 const DEFAULT_HABITS_BAD = [
   { id: "hb0", name: "Безцелно скролване" }, { id: "hb1", name: "Телефон в спалнята" },
@@ -79,19 +80,25 @@ let toastTimer = null;
 let saveTimer = null, syncLbl = "локално";
 let prevPct = 0;
 
+// изчиства старото фиксирано „20 страници“ име, за да стане навикът брояч на страници
+function migrateReading(st) {
+  const rh = (st.habitsGood || []).find((x) => x.id === READING_ID);
+  if (rh && /страниц/i.test(rh.name)) rh.name = "Четене на книга";
+  return st;
+}
 function loadState() {
-  const empty = { checks:{}, refl:{}, tasks:{}, weights:{}, shopping:{}, shopExtra:{}, edits:{},
+  const empty = { checks:{}, refl:{}, tasks:{}, weights:{}, shopping:{}, shopExtra:{}, edits:{}, reading:{},
     habitsGood: DEFAULT_HABITS_GOOD.slice(), habitsBad: DEFAULT_HABITS_BAD.slice() };
   try {
     let raw = localStorage.getItem(LS_KEY);
     if (!raw) { // миграция от v1
       const old = localStorage.getItem(LS_KEY_V1);
-      if (old) { const s = JSON.parse(old); return { ...empty, checks:s.checks||{}, refl:s.refl||{}, tasks:s.tasks||{}, habitsGood:s.habitsGood||empty.habitsGood, habitsBad:s.habitsBad||empty.habitsBad }; }
+      if (old) { const s = JSON.parse(old); return migrateReading({ ...empty, checks:s.checks||{}, refl:s.refl||{}, tasks:s.tasks||{}, habitsGood:s.habitsGood||empty.habitsGood, habitsBad:s.habitsBad||empty.habitsBad }); }
       return empty;
     }
     const s = JSON.parse(raw);
-    return { ...empty, ...s,
-      habitsGood: s.habitsGood || empty.habitsGood, habitsBad: s.habitsBad || empty.habitsBad };
+    return migrateReading({ ...empty, ...s, reading: s.reading || {},
+      habitsGood: s.habitsGood || empty.habitsGood, habitsBad: s.habitsBad || empty.habitsBad });
   } catch (e) { return empty; }
 }
 function save() {
@@ -412,6 +419,20 @@ function habitCount(id) {
   for (const key in state.checks) if (state.checks[key][id]) n++;
   return n;
 }
+/* ---------- четене: страници за деня + общо ---------- */
+const readPages = (key) => (state.reading && +state.reading[key]) || 0;
+function totalPages() {
+  let n = 0;
+  for (const key in state.reading) n += (+state.reading[key] || 0);
+  return n;
+}
+function setReadPages(key, val) {
+  val = Math.max(0, Math.min(99999, Math.round(val) || 0));
+  const r = { ...state.reading };
+  if (val > 0) r[key] = val; else delete r[key];
+  state.reading = r;
+  save();
+}
 function toggleCheck(id) {
   const key = dk(cur);
   const t = { ...dayChecks(key) };
@@ -489,7 +510,7 @@ function viewToday() {
   }
   if (cont && !cont.rest) items.push({ id:"content", time:"21:00", t:`Контент · ${cont.f}`, s:cont.h, k:"cam", nav:["plan","content"] });
   else if (cont && cont.rest) items.push({ id:"content", time:"21:00", t:"Контент · без пост", s:cont.d.slice(0,60)+"…", k:"cam", nav:["plan","content"] });
-  items.push({ id:"evening", time:"22:00", t:"Вечерна рутина", s:"Телефон извън спалнята · 20 страници четене", k:"habit" });
+  items.push({ id:"evening", time:"22:00", t:"Вечерна рутина", s:"Телефон извън спалнята · четене преди сън", k:"habit" });
   // ръчните задачи влизат в плана според часа си (като Google Calendar)
   tasks.forEach((tk) => items.push({
     custom:true, task:tk, id:"task"+tk.id, time:tk.time||"",
@@ -500,7 +521,12 @@ function viewToday() {
   const statEls = [];
   const stat = (val,lbl) => { const b = h("b",null,"0"); statEls.push([b,val]); return h("div",{class:"stat"},b,h("span",null,lbl)); };
   const allHabits = [...state.habitsGood, ...state.habitsBad];
-  const habitChip = (hb) => { const b = h("b",null,"0"); statEls.push([b,habitCount(hb.id)]); return h("div",{class:"habitChip"},b,h("span",null,hb.name)); };
+  const habitChip = (hb) => {
+    const isRead = hb.id === READING_ID;
+    const b = h("b",null,"0");
+    statEls.push([b, isRead ? totalPages() : habitCount(hb.id)]);
+    return h("div",{class:"habitChip"}, b, h("span",null, isRead ? "прочетени стр" : hb.name));
+  };
 
   const sec = h("section", null,
     h("div",{class:"quoteBan"}, h("b",null,"ЦИТАТ НА СЕДМИЦАТА"),
@@ -913,11 +939,12 @@ function viewProgress() {
         }},"Запиши")),
       sparkEl, wDelta,
       h("p",{class:"secS",style:"margin-top:8px"},"Записвай веднъж седмично (напр. неделя сутрин). Мерките > кантара — но кривата показва тенденцията.")),
-    h("h2",{class:"secT"},"Навици · общо пъти"),
+    h("h2",{class:"secT"},"Навици · общо"),
     [...state.habitsGood,...state.habitsBad].map((e)=>
       h("div",{class:"card streakRow"},
         h("span",{class:"habN"},e.name),
-        h("span",{class:"streakVal"},icon("flame",14),`${habitCount(e.id)} пъти`))),
+        h("span",{class:"streakVal"},icon("flame",14),
+          e.id===READING_ID?`${totalPages()} страници`:`${habitCount(e.id)} пъти`))),
     h("h2",{class:"secT"},"Данни"),
     exportNudge(),
     h("p",{class:"secS"},"Всичко се пази локално на това устройство. Свали резервно копие или прехвърли на друго устройство."),
@@ -952,9 +979,9 @@ function importData() {
       try{
         const s=JSON.parse(rd.result);
         if(!s.checks&&!s.refl&&!s.tasks)throw 0;
-        state={checks:s.checks||{},refl:s.refl||{},tasks:s.tasks||{},weights:s.weights||{},shopping:s.shopping||{},shopExtra:s.shopExtra||{},edits:s.edits||{},
+        state={checks:s.checks||{},refl:s.refl||{},tasks:s.tasks||{},weights:s.weights||{},shopping:s.shopping||{},shopExtra:s.shopExtra||{},edits:s.edits||{},reading:s.reading||{},
           habitsGood:s.habitsGood||DEFAULT_HABITS_GOOD.slice(),habitsBad:s.habitsBad||DEFAULT_HABITS_BAD.slice()};
-        save(); render();
+        migrateReading(state); save(); render();
       }catch(e){alert("Файлът не е валидно резервно копие на Жарава.");}
     };
     rd.readAsText(f);
@@ -964,12 +991,33 @@ function importData() {
 
 /* ---------- НАВИЦИ ---------- */
 function viewHabits() {
-  const o = dayChecks(dk(cur));
-  const rows = (list,kind,suffix)=>list.map((e)=>
-    h("div",{class:`card habitRow ${kind==="bad"?"bad":""} ${o[e.id]?"done":""}`},
+  const key = dk(cur);
+  const o = dayChecks(key);
+  // специален ред: четенето се въвежда със страници за деня (сам избираш колко си прочел)
+  const readingRow = (e,kind)=>{
+    const pages = readPages(key);
+    const totalNode = h("span",{class:"habS"},`днес ${pages} стр · общо ${totalPages()} страници`);
+    const inp = h("input",{class:"pageInp",type:"number",inputmode:"numeric",min:"0",placeholder:"0",value:pages||"","aria-label":"Прочетени страници днес"});
+    const refresh = ()=>{ totalNode.textContent = `днес ${readPages(key)} стр · общо ${totalPages()} страници`; };
+    inp.addEventListener("input",()=>{ setReadPages(key, parseInt(inp.value,10)||0); refresh(); });
+    inp.addEventListener("change",()=>render());
+    const step = (d)=>{ const nv=Math.max(0,(parseInt(inp.value,10)||0)+d); inp.value=nv||""; setReadPages(key,nv); render(); };
+    return h("div",{class:`card habitRow reading ${kind==="bad"?"bad":""} ${pages>0?"done":""}`},
       h("div",{class:"habL"},
         h("span",{class:"habN"},e.name),
-        h("span",{class:"habS"},`${habitCount(e.id)} ${suffix}`)),
+        totalNode),
+      h("div",{class:"pageStep"},
+        h("button",{class:"stepBtn",type:"button","aria-label":"−5 страници",onclick:()=>step(-5)},"−"),
+        inp,
+        h("button",{class:"stepBtn",type:"button","aria-label":"+5 страници",onclick:()=>step(5)},"+")));
+  };
+  const rows = (list,kind,suffix)=>list.map((e)=>
+    (e.id===READING_ID && kind==="good" && !editHabits)
+    ? readingRow(e,kind)
+    : h("div",{class:`card habitRow ${kind==="bad"?"bad":""} ${o[e.id]?"done":""}`},
+      h("div",{class:"habL"},
+        h("span",{class:"habN"},e.name),
+        h("span",{class:"habS"},e.id===READING_ID?`${totalPages()} страници`:`${habitCount(e.id)} ${suffix}`)),
       editHabits
         ? h("button",{class:"del","aria-label":"Изтрий навик",onclick:()=>{
             const f=kind==="good"?"habitsGood":"habitsBad";

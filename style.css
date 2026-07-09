@@ -43,12 +43,18 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .skelRing,.skelLines i,.skelCard{background:linear-gradient(100deg,#171210 40%,#241b14 50%,#171210 60%);background-size:220% 100%;animation:shimmer 1.3s linear infinite}
 @keyframes shimmer{from{background-position:130% 0}to{background-position:-90% 0}}
 
-/* header — iOS-style translucent material: почти прелива с фона, само лек намек за праг */
+/* header — премиум frosted glass (Apple-style): по-прозрачно стъкло с ярък ръб и мека дълбочина */
 .hdr{padding:14px 16px 10px;position:sticky;top:0;z-index:10;
-  background:linear-gradient(rgba(24,17,13,.16),rgba(16,11,9,.09));
-  backdrop-filter:blur(42px) saturate(2.1);-webkit-backdrop-filter:blur(42px) saturate(2.1);
-  border-bottom:1px solid rgba(255,255,255,.07);
-  box-shadow:inset 0 1px 0 rgba(255,235,210,.09), 0 10px 26px -18px rgba(255,77,20,calc(.16 + var(--glow)*.4));
+  background:
+    linear-gradient(rgba(255,255,255,.06),rgba(255,255,255,.015) 60%,rgba(255,255,255,0)),
+    linear-gradient(rgba(20,14,11,.22),rgba(14,10,8,.10));
+  backdrop-filter:blur(34px) saturate(2) brightness(1.06);
+  -webkit-backdrop-filter:blur(34px) saturate(2) brightness(1.06);
+  border-bottom:1px solid rgba(255,255,255,.11);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(0,0,0,.16),
+    0 12px 34px -22px rgba(255,77,20,calc(.18 + var(--glow)*.4));
   transition:box-shadow .8s ease, background .8s ease}
 .hdrTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .brand{display:flex;gap:6px;align-items:center}
@@ -220,6 +226,20 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .habitRow.done .habS{color:var(--amber);opacity:.75}
 .habitRow.bad .habN{color:var(--text)}
 
+/* четене — избери колко страници за деня */
+.habitRow.reading{align-items:center}
+.pageStep{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.stepBtn{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid var(--line);
+  color:var(--amber);font-family:var(--font-display);font-size:20px;font-weight:700;line-height:1;
+  display:flex;align-items:center;justify-content:center;transition:all .15s}
+.stepBtn:active{transform:scale(.9);background:rgba(255,120,40,.16);border-color:rgba(255,77,20,.4)}
+.pageInp{width:58px;flex:0 0 58px;min-width:0;text-align:center;background:var(--panel2);border:1px solid var(--line);
+  border-radius:12px;padding:9px 4px;color:var(--text);font-family:var(--font-display);font-weight:700;font-size:16px;
+  -moz-appearance:textfield}
+.pageInp::-webkit-outer-spin-button,.pageInp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.pageInp:focus{outline:none;border-color:var(--ember)}
+.habitRow.reading.done .pageInp{color:var(--amber);border-color:rgba(255,184,107,.4)}
+
 /* content */
 .contCard .hook{font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.45}
 .contD{font-size:13px;line-height:1.6;color:var(--text)}
@@ -316,12 +336,18 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .toast.out{opacity:0;transform:translateX(-50%) translateY(8px);transition:all .3s ease}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%)}}
 
-/* nav — iOS-style translucent material, в тон с горната лента; blur-ът носи четимостта, не плътността */
+/* nav — премиум frosted glass в тон с горната лента; blur-ът носи четимостта, не плътността */
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;display:flex;z-index:20;
-  background:linear-gradient(rgba(16,11,9,.1),rgba(12,9,7,.4) 55%,rgba(10,7,6,.5));
-  backdrop-filter:blur(42px) saturate(2.1);-webkit-backdrop-filter:blur(42px) saturate(2.1);
-  border-top:1px solid rgba(255,255,255,.07);
-  box-shadow:inset 0 1px 0 rgba(255,235,210,.08), 0 -10px 24px -18px rgba(255,77,20,calc(.16 + var(--glow)*.4));
+  background:
+    linear-gradient(rgba(255,255,255,.055),rgba(255,255,255,.01) 45%,rgba(255,255,255,0)),
+    linear-gradient(rgba(16,11,9,.14),rgba(12,9,7,.30) 55%,rgba(10,7,6,.40));
+  backdrop-filter:blur(34px) saturate(2) brightness(1.05);
+  -webkit-backdrop-filter:blur(34px) saturate(2) brightness(1.05);
+  border-top:1px solid rgba(255,255,255,.11);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(0,0,0,.20),
+    0 -12px 30px -22px rgba(255,77,20,calc(.18 + var(--glow)*.4));
   transition:box-shadow .8s ease, background .8s ease;
   padding:8px 3px calc(10px + env(safe-area-inset-bottom))}
 .navTab{flex:1;display:flex;flex-direction:column;gap:3px;align-items:center;padding:6px 1px;color:var(--mut);border-radius:12px;transition:color .2s, background .2s;min-width:0}
