@@ -155,7 +155,7 @@ auth.getRedirectResult().catch((err) => { lastError = "вход: " + errText(err
 auth.onAuthStateChanged((user) => {
   currentUser = user || null;
   if (user) { startListening(user.uid); }
-  else { stopListening(); setSync("локално"); }
+  else { stopListening(); setSync("не си влязъл"); }
   const a = app(); if (a) a.rerender();
 });
 

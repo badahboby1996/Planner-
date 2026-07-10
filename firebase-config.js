@@ -9,10 +9,10 @@
    Пълните стъпки за настройка са в README.md.
    ============================================================ */
 window.ZHARAVA_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyD1xEelRErxmvRrsXnFAneCwUzHs3eI5MY",
-  authDomain: "planner-22e65.firebaseapp.com",
-  projectId: "planner-22e65",
-  storageBucket: "planner-22e65.firebasestorage.app",
-  messagingSenderId: "518586150460",
-  appId: "1:518586150460:web:792f6d1eebef630dbadd39",
+  apiKey: "AIzaSyBZaLJFe7zcg0QGNdHfrLrFa757zD2iJQo",
+  authDomain: "myplanner-3c7bd.firebaseapp.com",
+  projectId: "myplanner-3c7bd",
+  storageBucket: "myplanner-3c7bd.firebasestorage.app",
+  messagingSenderId: "642177544895",
+  appId: "1:642177544895:web:1b86dfcb346a9ff205cc0a",
 };
