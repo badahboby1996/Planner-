@@ -38,6 +38,10 @@ let currentUser = null;
 let unsubscribe = null;   // слушателят на документа
 let pushTimer = null;
 let lastPushedAt = 0;     // за да не прилагаме собствения си запис обратно
+let lastError = null;     // последната грешка (за диагностика)
+let lastPushOk = null;    // час на последния успешен запис в облака
+let lastPullOk = null;    // час на последното успешно четене от облака
+const errText = (err) => (err && (err.code || err.message)) || String(err);
 
 const app = () => window.ZHARAVA_APP; // изложено от app.js
 const docRef = (uid) => db.collection("planners").doc(uid);
@@ -67,9 +71,10 @@ function push(state) {
       data: JSON.stringify(state), updatedAt: at,
       at: firebase.firestore.FieldValue.serverTimestamp(),
     })
-      .then(() => setSync("в облака ✓"))
-      .catch((err) => setSync(err && err.code === "permission-denied"
-        ? "грешка: Firestore правила" : "локално (офлайн)"));
+      .then(() => { lastPushOk = new Date(); lastError = null; setSync("в облака ✓"); })
+      .catch((err) => { lastError = "запис: " + errText(err);
+        setSync(err && err.code === "permission-denied"
+          ? "грешка: Firestore правила" : "локално (офлайн)"); });
   }, 800);
 }
 
@@ -82,6 +87,7 @@ function startListening(uid) {
     const local = a.getState();
     const localAt = local.updatedAt || 0;
 
+    lastPullOk = new Date();
     if (!snap.exists) {
       // нов акаунт → качваме локалните данни
       if (first) { first = false; push(local); }
@@ -109,8 +115,9 @@ function startListening(uid) {
     // промяна от друго устройство (нашите записи имат pendingWrites или същия updatedAt)
     if (snap.metadata.hasPendingWrites) return;
     if (remoteAt > localAt && remoteAt !== lastPushedAt) applyRemote(remoteState);
-  }, (err) => setSync(err && err.code === "permission-denied"
-    ? "грешка: Firestore правила" : "грешка в облака"));
+  }, (err) => { lastError = "четене: " + errText(err);
+    setSync(err && err.code === "permission-denied"
+      ? "грешка: Firestore правила" : "грешка в облака"); });
 }
 function applyRemote(remoteState) {
   const a = app();
@@ -128,21 +135,23 @@ function stopListening() { if (unsubscribe) { unsubscribe(); unsubscribe = null;
 function signIn() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).catch((err) => {
+    lastError = "вход: " + errText(err);
     // на телефон/PWA попъпът често е блокиран → redirect
     if (err && (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment"
         || err.code === "auth/cancelled-popup-request")) {
-      auth.signInWithRedirect(provider).catch(() => setSync("грешка при вход"));
+      auth.signInWithRedirect(provider).catch((e2) => { lastError = "вход: " + errText(e2); setSync("грешка при вход"); });
     } else if (err && err.code === "auth/unauthorized-domain") {
       setSync("грешка: домейнът не е разрешен");
       alert("Firebase: добави badahboby1996.github.io в Authentication → Settings → Authorized domains.");
     } else if (err && err.code !== "auth/popup-closed-by-user") {
       setSync("грешка при вход");
     }
+    const a = app(); if (a) a.rerender();
   });
 }
 function signOutUser() { auth.signOut().catch(() => {}); }
 
-auth.getRedirectResult().catch(() => {});
+auth.getRedirectResult().catch((err) => { lastError = "вход: " + errText(err); });
 auth.onAuthStateChanged((user) => {
   currentUser = user || null;
   if (user) { startListening(user.uid); }
@@ -150,10 +159,18 @@ auth.onAuthStateChanged((user) => {
   const a = app(); if (a) a.rerender();
 });
 
+const fmtT = (d) => d ? d.toLocaleTimeString("bg-BG",{hour:"2-digit",minute:"2-digit",second:"2-digit"}) : "още не";
 window.ZHARAVA_CLOUD = {
   enabled: true,
   active: () => !!currentUser,
   user: () => currentUser,
   signIn, signOutUser, push,
+  debug: () => ({
+    user: currentUser ? (currentUser.email || currentUser.uid) : "не си влязъл",
+    listening: !!unsubscribe,
+    lastPushOk: fmtT(lastPushOk),
+    lastPullOk: fmtT(lastPullOk),
+    lastError: lastError || "няма",
+  }),
 };
 })();

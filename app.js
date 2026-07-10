@@ -970,14 +970,19 @@ function cloudSection() {
     h("strong",null,"Облачна синхронизация"),
     h("p",null,"Не е настроена — данните живеят само на това устройство. Настройката е безплатна и отнема 10 мин (виж README, раздел Firebase)."));
   const user = cloud.user();
+  const d = cloud.debug ? cloud.debug() : null;
+  const diag = d ? h("p",{class:"secS",style:"margin:10px 0 0;word-break:break-word"},
+    `Диагностика · акаунт: ${d.user} · слушане: ${d.listening?"да":"не"} · запис в облака: ${d.lastPushOk} · четене от облака: ${d.lastPullOk} · грешка: ${d.lastError}`) : null;
   if (!user) return h("div",{class:"card"},
     h("strong",null,"Облачна синхронизация"),
     h("p",{class:"secS",style:"margin:6px 0 10px"},"Влез с Google и всяка отметка се пази в облака и се появява на всичките ти устройства."),
-    h("button",{class:"btn",onclick:()=>cloud.signIn()},"Вход с Google"));
+    h("button",{class:"btn",onclick:()=>cloud.signIn()},"Вход с Google"),
+    diag);
   return h("div",{class:"card"},
     h("strong",null,"Облачна синхронизация · включена"),
     h("p",{class:"secS",style:"margin:6px 0 10px"},`Влязъл си като ${user.email||user.displayName||"Google акаунт"}. Данните се синхронизират автоматично.`),
-    h("button",{class:"btnGhost",onclick:()=>cloud.signOutUser()},"Изход"));
+    h("button",{class:"btnGhost",onclick:()=>cloud.signOutUser()},"Изход"),
+    diag);
 }
 function exportData() {
   const blob = new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
