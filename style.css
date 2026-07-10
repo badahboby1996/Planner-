@@ -60,9 +60,8 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 @keyframes hustleBurn{
   0%,100%{text-shadow:0 0 4px rgba(255,70,20,.8),0 0 10px rgba(255,40,10,.55),0 0 18px rgba(255,15,0,.35)}
   50%{text-shadow:0 0 9px rgba(255,110,40,1),0 0 19px rgba(255,60,15,.85),0 0 32px rgba(255,20,0,.55)}}
-.sync{font-size:11.5px;color:var(--mut);letter-spacing:.05em;cursor:pointer}
+.sync{font-size:11.5px;color:var(--mut);letter-spacing:.05em}
 .sync.err{color:#ff7b5c}
-.sync.warn{color:#ffb648}
 .hdrMain{display:flex;gap:14px;align-items:center}
 .ring{position:relative;flex-shrink:0}
 .ringLbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
