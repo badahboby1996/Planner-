@@ -119,7 +119,8 @@ function save() {
   }, 250);
 }
 function setSync(t) { syncLbl = t; const el = document.querySelector(".sync");
-  if (el) { el.textContent = t; el.classList.toggle("err", t.indexOf("грешка")===0); } }
+  if (el) { el.textContent = t; el.classList.toggle("err", t.indexOf("грешка")===0);
+    el.classList.toggle("warn", t==="не си влязъл"); } }
 
 /* ---------- месечен модул + edits ---------- */
 function monthData(dateObj) { return MONTHS[mk(dateObj)] || null; }
@@ -1213,7 +1214,9 @@ function render() {
   const header = h("header",{class:"hdr"},
     h("div",{class:"hdrTop"},
       h("div",{class:"brand"},icon("flame",16),h("span",{class:"brandTxt"},"ХЪСЪЛ")),
-      h("span",{class:`sync ${syncLbl.indexOf("грешка")===0?"err":""}`},syncLbl)),
+      h("span",{class:`sync ${syncLbl.indexOf("грешка")===0?"err":syncLbl==="не си влязъл"?"warn":""}`,
+        title:"Данни за облачната синхронизация",
+        onclick:()=>{tab="progress";render();}},syncLbl)),
     h("div",{class:"hdrMain"},
       ring(Math.max(pct,0.02),day),
       h("div",{class:"hdrInfo"},
