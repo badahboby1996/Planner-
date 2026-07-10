@@ -86,9 +86,17 @@ function migrateReading(st) {
   if (rh && /страниц/i.test(rh.name)) rh.name = "Четене на книга";
   return st;
 }
-function loadState() {
-  const empty = { checks:{}, refl:{}, tasks:{}, weights:{}, shopping:{}, shopExtra:{}, edits:{}, reading:{},
+function emptyState() {
+  return { checks:{}, refl:{}, tasks:{}, weights:{}, shopping:{}, shopExtra:{}, edits:{}, reading:{},
     habitsGood: DEFAULT_HABITS_GOOD.slice(), habitsBad: DEFAULT_HABITS_BAD.slice() };
+}
+function normalizeState(s) {
+  const empty = emptyState();
+  return migrateReading({ ...empty, ...s, reading: s.reading || {},
+    habitsGood: s.habitsGood || empty.habitsGood, habitsBad: s.habitsBad || empty.habitsBad });
+}
+function loadState() {
+  const empty = emptyState();
   try {
     let raw = localStorage.getItem(LS_KEY);
     if (!raw) { // миграция от v1
@@ -96,16 +104,18 @@ function loadState() {
       if (old) { const s = JSON.parse(old); return migrateReading({ ...empty, checks:s.checks||{}, refl:s.refl||{}, tasks:s.tasks||{}, habitsGood:s.habitsGood||empty.habitsGood, habitsBad:s.habitsBad||empty.habitsBad }); }
       return empty;
     }
-    const s = JSON.parse(raw);
-    return migrateReading({ ...empty, ...s, reading: s.reading || {},
-      habitsGood: s.habitsGood || empty.habitsGood, habitsBad: s.habitsBad || empty.habitsBad });
+    return normalizeState(JSON.parse(raw));
   } catch (e) { return empty; }
 }
 function save() {
   clearTimeout(saveTimer); setSync("запис…");
   saveTimer = setTimeout(() => {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); setSync("запазено"); }
-    catch (e) { setSync("грешка при запис"); }
+    state.updatedAt = Date.now(); // за облачния merge: по-новото устройство печели
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+    catch (e) { setSync("грешка при запис"); return; }
+    const cloud = window.ZHARAVA_CLOUD;
+    if (cloud && cloud.enabled && cloud.active()) cloud.push(state);
+    else setSync("запазено");
   }, 250);
 }
 function setSync(t) { syncLbl = t; const el = document.querySelector(".sync");
@@ -946,11 +956,28 @@ function viewProgress() {
         h("span",{class:"streakVal"},icon("flame",14),
           e.id===READING_ID?`${totalPages()} страници`:`${habitCount(e.id)} пъти`))),
     h("h2",{class:"secT"},"Данни"),
+    cloudSection(),
     exportNudge(),
     h("p",{class:"secS"},"Всичко се пази локално на това устройство. Свали резервно копие или прехвърли на друго устройство."),
     h("div",{class:"dataBtns"},
       h("button",{class:"btn",onclick:exportData},"Експорт (JSON)"),
       h("button",{class:"btnOut",onclick:importData},"Импорт")));
+}
+/* ---------- облак: вход/изход + статус (Firebase) ---------- */
+function cloudSection() {
+  const cloud = window.ZHARAVA_CLOUD;
+  if (!cloud || !cloud.enabled) return h("div",{class:"card hint"},
+    h("strong",null,"Облачна синхронизация"),
+    h("p",null,"Не е настроена — данните живеят само на това устройство. Настройката е безплатна и отнема 10 мин (виж README, раздел Firebase)."));
+  const user = cloud.user();
+  if (!user) return h("div",{class:"card"},
+    h("strong",null,"Облачна синхронизация"),
+    h("p",{class:"secS",style:"margin:6px 0 10px"},"Влез с Google и всяка отметка се пази в облака и се появява на всичките ти устройства."),
+    h("button",{class:"btn",onclick:()=>cloud.signIn()},"Вход с Google"));
+  return h("div",{class:"card"},
+    h("strong",null,"Облачна синхронизация · включена"),
+    h("p",{class:"secS",style:"margin:6px 0 10px"},`Влязъл си като ${user.email||user.displayName||"Google акаунт"}. Данните се синхронизират автоматично.`),
+    h("button",{class:"btnGhost",onclick:()=>cloud.signOutUser()},"Изход"));
 }
 function exportData() {
   const blob = new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
@@ -1254,6 +1281,20 @@ function render() {
     window.scrollTo(0, 0);
   }, { passive: true });
 })();
+
+/* ---------- мост към облачната синхронизация (firebase-sync.js) ---------- */
+window.ZHARAVA_APP = {
+  getState: () => state,
+  setSync,
+  rerender: render,
+  // данни от облака: пишем само в localStorage (без save(), за да не ги качим обратно)
+  applyRemoteState: (s) => {
+    state = normalizeState(s);
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
+    prevPct = dayScore(cur);
+    render();
+  },
+};
 
 setSync("запазено");
 prevPct = dayScore(cur);

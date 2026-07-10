@@ -27,6 +27,8 @@
    data-2026-07.js
    bg-embers.webp
    sw.js
+   firebase-config.js
+   firebase-sync.js
    manifest.webmanifest
    icon.svg
    README.md
@@ -48,10 +50,56 @@
 
 ## Данни
 
-Всички отметки, рефлексии, тегло, редакции — локално в браузъра (localStorage). Нищо не се изпраща никъде.
+Всички отметки, рефлексии, тегло, редакции — локално в браузъра (localStorage). Ако включиш Firebase (виж по-долу), същите данни се синхронизират и в облака между устройствата ти.
 - **Резервно копие**: Прогрес → Експорт (JSON).
-- **Друго устройство**: там Прогрес → Импорт.
+- **Друго устройство**: Firebase синхронизация (автоматично) или Прогрес → Импорт (ръчно).
 - Данните от старата версия (v1) се мигрират автоматично при първото отваряне.
+
+## Firebase · облачна синхронизация (по избор, безплатно)
+
+С Firebase всяка отметка се пази в облака и се появява на всичките ти устройства (телефон + компютър). Без настройка приложението работи както досега — само локално.
+
+### 1. Създай Firebase проект
+1. Отвори [console.firebase.google.com](https://console.firebase.google.com) → **Add project** → име напр. `zharava` → Google Analytics не е нужен → **Create**.
+2. От началния екран на проекта: иконата **`</>`** (Web) → име на приложението напр. `zharava-web` → **Register app** (без Firebase Hosting).
+3. Ще видиш блок `firebaseConfig = { apiKey: "...", ... }` — **копирай стойностите**.
+
+### 2. Попълни `firebase-config.js`
+Отвори файла `firebase-config.js` в репозитория и попълни стойностите от стъпка 1:
+```js
+window.ZHARAVA_FIREBASE_CONFIG = {
+  apiKey: "AIza...",
+  authDomain: "zharava.firebaseapp.com",
+  projectId: "zharava",
+  storageBucket: "zharava.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:abc123",
+};
+```
+
+### 3. Включи входа с Google
+1. Firebase Console → **Build → Authentication → Get started**.
+2. Таб **Sign-in method** → **Google** → Enable → избери support email → **Save**.
+3. Таб **Settings → Authorized domains** → **Add domain** → добави домейна на GitHub Pages: `<потребител>.github.io`.
+
+### 4. Включи Firestore (базата данни)
+1. Firebase Console → **Build → Firestore Database → Create database** → **Start in production mode** → регион напр. `europe-west3` → **Enable**.
+2. Таб **Rules** → замени правилата с тези (всеки вижда само своите данни) → **Publish**:
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /planners/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
+```
+
+### 5. Влез в приложението
+Commit + push на попълнения `firebase-config.js`, отвори приложението → таб **Прогрес → Данни → Вход с Google**. Готово — статусът горе вдясно става „в облака ✓“.
+
+**Как работи синхронизацията:** локалното копие винаги е първо (офлайн всичко работи), облакът се обновява при всяка промяна. При отваряне на второ устройство печели по-новото състояние (по времеви печат). Данните са един документ `planners/{твоя-uid}` — безплатният план на Firebase стига в пъти.
 
 ## Структура
 
@@ -63,4 +111,6 @@
 | `data-2026-07.js` | Планът за юли: тренировки по дати, меню, контент, пазар, теми |
 | `bg-embers.webp` | AI фонът с жаравата |
 | `sw.js` | Service worker — офлайн + мигновено отваряне |
+| `firebase-config.js` | Твоите Firebase ключове (празен = без облак) |
+| `firebase-sync.js` | Облачната синхронизация (Auth + Firestore) |
 
