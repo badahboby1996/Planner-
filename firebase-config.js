@@ -14,5 +14,5 @@ window.ZHARAVA_FIREBASE_CONFIG = {
   projectId: "planner-22e65",
   storageBucket: "planner-22e65.firebasestorage.app",
   messagingSenderId: "518586150460",
-  appId: "1:518586150460:web:3efffd92714f3a09badd39",
+  appId: "1:518586150460:web:792f6d1eebef630dbadd39",
 };
