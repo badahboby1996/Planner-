@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F7F5F0" />
+<meta name="description" content="Хъсъл Kaizen — личен 180-дневен планер за дисциплина, хранене, тренировки, навици и измерим прогрес." />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<title>Хъсъл · Kaizen Planner</title>
+
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icon-192.png" type="image/png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="stylesheet" href="style.css?v=40" />
+
+<!-- Шрифтовете не блокират рендера; без мрежа пада на системен шрифт -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@500;700;900&display=swap"
+      media="print" onload="this.media='all'" />
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@500;700;900&display=swap" />
+</noscript>
+
+<!-- Splash: показва се мигновено (инлайн стилове, не чака style.css)
+     и се маха от app.js след първото рендиране -->
+<style>
+#splash{position:fixed;inset:0;z-index:9999;background:#F7F5F0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  transition:opacity .45s ease}
+#splash.hide{opacity:0;pointer-events:none}
+#splash img{width:116px;height:116px;
+  filter:drop-shadow(0 10px 20px rgba(30,26,21,.13));
+  animation:splashPulse 1.6s ease-in-out infinite}
+#splash span{font-family:"Manrope",system-ui,sans-serif;font-weight:900;font-size:15px;
+  letter-spacing:.3em;color:#1B1B19}
+#splash span::after{content:"  ·  継続は力なり";font-family:"Noto Sans JP",sans-serif;font-size:10px;letter-spacing:.12em;color:#F0441E}
+@keyframes splashPulse{
+  0%,100%{transform:scale(1);filter:drop-shadow(0 8px 15px rgba(30,26,21,.11))}
+  50%{transform:scale(1.035);filter:drop-shadow(0 13px 24px rgba(240,68,30,.19))}}
+@media (prefers-reduced-motion: reduce){#splash img{animation:none}}
+</style>
+</head>
+<body>
+<div id="splash" aria-hidden="true"><img src="logo-mark.png" alt="" /><span>ХЪСЪЛ</span></div>
+<div class="bgImg" aria-hidden="true"></div>
+<canvas id="embers" aria-hidden="true"></canvas>
+<div id="root" class="app"></div>
+
+<!-- ===== FIREBASE (облачна синхронизация между устройства) =====
+     Ако скриптовете не заредят (няма мрежа), приложението работи локално. -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js" defer></script>
+
+<!-- ===== МЕСЕЧНИ ПЛАНОВЕ =====
+     Всеки месец качваш нов файл data-YYYY-MM.js и добавяш ред тук.
+     Старите месеци остават — календарът и прогресът ги ползват. -->
+<script src="data-2026-07.js?v=40" defer></script>
+<!-- <script src="data-2026-08.js" defer></script> -->
+
+<script src="app.js?v=40" defer></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+// застраховка: ако приложението не тръгне до 6 сек, splash-ът се маха сам
+setTimeout(() => {
+  const sp = document.getElementById("splash");
+  if (sp) { sp.classList.add("hide"); setTimeout(() => sp.remove(), 500); }
+}, 6000);
+</script>
+</body>
+</html>
