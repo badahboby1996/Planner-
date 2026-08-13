@@ -1,4 +1,4 @@
-const CACHE = 'hustle-v6-2026-08-11';
+const CACHE = 'hustle-v7-meal-plan-2026-08-13';
 const CORE = [
   './',
   './index.html',
