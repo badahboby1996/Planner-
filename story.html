@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#0d0f0b" />
+<title>ХЪСЪЛ — 8 седмици предизвикателство</title>
+<meta name="description" content="Историята на 8-седмичното предизвикателство на Боби: тренировъчната програма, хранителният режим, книгите и всичко научено по пътя." />
+<meta property="og:title" content="ХЪСЪЛ — 8 седмици предизвикателство" />
+<meta property="og:description" content="Тренировъчната програма, хранителният режим и книгите зад едно 8-седмично предизвикателство." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/food-hero.webp" />
+<link rel="apple-touch-icon" href="assets/icon-192.png" />
+<style>
+:root{
+  --ink:#0d0f0b;--ink-2:#151810;--paper:#f4f1e8;--card:rgba(255,254,249,.05);
+  --line:rgba(255,255,255,.11);--lime:#c9f45b;--lime-deep:#a8dc30;--orange:#ff8452;
+  --peach:#ffcaa8;--gold:#ffc54d;--sky:#afdceb;--muted:#9aa093;
+  --radius:26px;--maxw:1080px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;background:var(--ink)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;color:#f2f3ee;background:var(--ink);overflow-x:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+#bg-fallback{position:fixed;inset:0;z-index:0;display:none;
+  background:radial-gradient(circle at 78% 12%,rgba(201,244,91,.22),transparent 45%),
+             radial-gradient(circle at 15% 78%,rgba(255,132,82,.2),transparent 48%),var(--ink)}
+.veil{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(103deg,rgba(9,11,8,.93) 0%,rgba(9,11,8,.78) 40%,rgba(9,11,8,.34) 72%,rgba(9,11,8,.6) 100%),
+             radial-gradient(ellipse at 50% 42%,transparent 22%,rgba(9,11,8,.55) 80%)}
+@media(max-width:860px){
+  .veil{background:linear-gradient(rgba(9,11,8,.9) 0%,rgba(9,11,8,.8) 55%,rgba(9,11,8,.88) 100%)}
+}
+.grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.3;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E")}
+main{position:relative;z-index:3}
+.wrap{width:min(100% - 36px,var(--maxw));margin-inline:auto}
+section{padding:clamp(64px,11vw,132px) 0;position:relative}
+
+/* ── типография ── */
+h1,h2,h3{margin:0;font-weight:950;letter-spacing:-.045em;line-height:1.02}
+h1{font-size:clamp(44px,11.5vw,116px);letter-spacing:-.06em;text-shadow:0 6px 40px rgba(6,8,5,.75)}
+h2{font-size:clamp(30px,5.4vw,54px)}
+h3{font-size:19px;letter-spacing:-.03em;line-height:1.2}
+p{margin:0}
+.eyebrow{font-size:11px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:var(--lime)}
+.lead{color:#c9cec2;font-size:clamp(15px,2.1vw,19px);max-width:60ch;margin-top:18px;text-shadow:0 2px 22px rgba(6,8,5,.8)}
+.muted{color:var(--muted);font-size:13px}
+
+/* ── топбар ── */
+header{position:fixed;z-index:20;top:0;left:0;right:0;padding:14px 0;
+  backdrop-filter:blur(14px);background:linear-gradient(#0d0f0bd9,#0d0f0b00);transition:.3s}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit}
+.mark{width:36px;height:36px;background:var(--lime);border-radius:12px;display:grid;place-items:center;
+  transform:rotate(-5deg);box-shadow:0 8px 22px rgba(201,244,91,.28)}
+.mark b{color:var(--ink);font-size:18px;transform:rotate(5deg);letter-spacing:-2px}
+.wordmark{font-size:15px;font-weight:950;letter-spacing:.2em}
+nav{display:flex;gap:6px}
+nav a{color:#b8bdb1;text-decoration:none;font-size:12px;font-weight:800;letter-spacing:.04em;
+  padding:9px 12px;border-radius:12px}
+nav a:hover{color:var(--lime);background:rgba(255,255,255,.06)}
+@media(max-width:760px){nav{display:none}}
+
+/* ── бутони ── */
+.btn{display:inline-flex;align-items:center;gap:9px;border:0;cursor:pointer;text-decoration:none;
+  border-radius:999px;padding:14px 22px;font-size:13px;font-weight:900;letter-spacing:.03em;
+  background:var(--lime);color:var(--ink);transition:transform .2s,box-shadow .2s;
+  box-shadow:0 12px 30px rgba(201,244,91,.22)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 18px 38px rgba(201,244,91,.3)}
+.btn.ghost{background:transparent;color:#eef0e9;border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover{border-color:var(--lime);color:var(--lime)}
+
+/* ── hero ── */
+.hero{min-height:100svh;display:flex;align-items:center;padding-top:96px}
+.hero h1 span{display:block}
+.hero h1 .accent{color:var(--lime)}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:12px;margin-top:52px;max-width:660px}
+.stat{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:15px 16px;backdrop-filter:blur(10px)}
+.stat b{display:block;font-size:26px;letter-spacing:-.04em;line-height:1}
+.stat span{display:block;margin-top:6px;font-size:9.5px;font-weight:850;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted)}
+.scroll-hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);font-size:10px;
+  letter-spacing:.22em;font-weight:850;color:#7e8577;text-transform:uppercase;display:flex;
+  flex-direction:column;align-items:center;gap:9px}
+.scroll-hint i{width:1px;height:34px;background:linear-gradient(var(--lime),transparent);animation:drop 1.9s infinite}
+@keyframes drop{0%{opacity:0;transform:scaleY(.2)}45%{opacity:1}100%{opacity:0;transform:scaleY(1)}}
+
+/* ── прогрес на предизвикателството ── */
+.progress-card{border:1px solid var(--line);background:rgba(13,15,11,.55);backdrop-filter:blur(16px);
+  border-radius:30px;padding:clamp(22px,3.4vw,34px)}
+.weeks{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-top:22px}
+.week{height:56px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;
+  font-weight:850;color:var(--muted)}
+.week b{font-size:14px;color:#e9ebe4}
+.week.done{background:rgba(201,244,91,.16);border-color:rgba(201,244,91,.4);color:#cdd7b6}
+.week.done b{color:var(--lime)}
+.week.now{background:var(--orange);border-color:var(--orange);color:#3a1b0c}
+.week.now b{color:#1b0f06}
+@media(max-width:620px){.weeks{grid-template-columns:repeat(4,1fr)}}
+
+/* ── таймлайн ── */
+.timeline{margin-top:44px;position:relative;padding-left:26px}
+.timeline:before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(var(--lime),rgba(201,244,91,.08))}
+.tl-item{position:relative;padding:0 0 30px 0}
+.tl-item:before{content:"";position:absolute;left:-26px;top:6px;width:12px;height:12px;border-radius:50%;
+  background:var(--ink);border:2px solid var(--lime)}
+.tl-item.future:before{border-color:#4d5346}
+.tl-date{font-size:10.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.tl-item.future .tl-date{color:#7e8577}
+.tl-item h3{margin:8px 0 6px}
+.tl-item p{color:#b6bcae;font-size:14px;max-width:62ch}
+
+/* ── карти ── */
+.grid{display:grid;gap:14px;margin-top:38px}
+.grid.two{grid-template-columns:repeat(auto-fit,minmax(390px,1fr))}
+.grid.three{grid-template-columns:repeat(auto-fit,minmax(232px,1fr))}
+.card{border:1px solid var(--line);background:var(--card);backdrop-filter:blur(12px);
+  border-radius:var(--radius);padding:22px;transition:.28s}
+.card:hover{border-color:rgba(201,244,91,.35);transform:translateY(-3px)}
+.card .tag{display:inline-block;border-radius:999px;padding:6px 10px;font-size:9px;font-weight:950;
+  letter-spacing:.1em;text-transform:uppercase;background:var(--lime);color:var(--ink);margin-bottom:12px}
+.card .tag.rest{background:var(--sky)}
+.card .tag.soft{background:var(--peach)}
+.card .tag.warm{background:var(--gold)}
+.card h3+p{margin-top:8px;color:#b6bcae;font-size:13.5px}
+.ex-list{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:9px}
+.ex-list li{display:flex;justify-content:space-between;gap:14px;font-size:13px;padding-bottom:9px;
+  border-bottom:1px dashed rgba(255,255,255,.1)}
+.ex-list li:last-child{border:0;padding-bottom:0}
+.ex-list b{color:var(--lime);font-weight:850;white-space:nowrap}
+.card small.finisher{display:block;margin-top:14px;color:var(--muted);font-size:11.5px}
+
+/* ── храна ── */
+.day-row{display:grid;grid-template-columns:104px 1fr auto;gap:16px;align-items:center;
+  padding:15px 4px;border-bottom:1px solid rgba(255,255,255,.08)}
+.day-row:last-child{border:0}
+.day-row .d{font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--lime)}
+.day-row .m{font-size:13.5px;color:#c6cbbe}
+.day-row .k{font-size:12px;font-weight:850;color:var(--muted);white-space:nowrap}
+@media(max-width:620px){.day-row{grid-template-columns:1fr auto;gap:6px}.day-row .d{grid-column:1/-1}}
+.rules{display:grid;gap:10px;margin-top:26px}
+.rule{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start;font-size:14px;color:#c2c8ba}
+.rule i{width:28px;height:28px;border-radius:10px;background:var(--lime);color:var(--ink);
+  display:grid;place-items:center;font-style:normal;font-weight:950;font-size:13px}
+
+/* ── книги ── */
+.book{display:grid;gap:12px}
+.book .cover{height:130px;border-radius:18px;display:flex;align-items:flex-end;padding:14px;
+  font-weight:950;font-size:15px;letter-spacing:-.03em;color:var(--ink);line-height:1.1}
+.book .rating{color:var(--gold);letter-spacing:2px;font-size:13px}
+.empty-state{border:1px dashed var(--line);border-radius:var(--radius);padding:34px;text-align:center;color:var(--muted)}
+
+/* ── финал ── */
+.cta{border-radius:34px;padding:clamp(28px,5vw,56px);background:linear-gradient(135deg,var(--lime),#9fd62c);
+  color:var(--ink);position:relative;overflow:hidden}
+.cta:after{content:"08";position:absolute;right:-8px;bottom:-46px;font-size:170px;font-weight:950;
+  color:rgba(13,15,11,.08);letter-spacing:-.09em}
+.cta h2{max-width:16ch}
+.cta p{margin-top:14px;max-width:52ch;font-size:15px;color:#2b3222}
+.cta .btn{background:var(--ink);color:var(--lime);margin-top:26px;box-shadow:none}
+footer{padding:44px 0 60px;color:#6e7568;font-size:12px;display:flex;flex-wrap:wrap;gap:12px;
+  justify-content:space-between;border-top:1px solid rgba(255,255,255,.07)}
+footer a{color:#9aa093;text-decoration:none}
+footer a:hover{color:var(--lime)}
+
+/* ── анимации при скрол ── */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  .scroll-hint i{animation:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="bg-fallback" aria-hidden="true"></div>
+<div class="veil" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="mark"><b>Х</b></span><span class="wordmark">ХЪСЪЛ</span></a>
+    <nav>
+      <a href="#history">Историята</a>
+      <a href="#training">Тренировки</a>
+      <a href="#food">Хранене</a>
+      <a href="#books">Книги</a>
+    </nav>
+    <a class="btn ghost" href="index.html">Приложението →</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow reveal">Личното предизвикателство на Боби</p>
+      <h1 class="reveal"><span>ОСЕМ</span><span class="accent">СЕДМИЦИ.</span><span>БЕЗ ИЗВИНЕНИЯ.</span></h1>
+      <p class="lead reveal">Тренировъчна програма, изчислен хранителен режим и по една книга наведнъж.
+        Тук записвам всичко — какво работи, какво не, и колко струва наистина да не се откажеш.</p>
+      <div class="hero-actions reveal">
+        <a class="btn" href="#history">Проследи историята</a>
+        <a class="btn ghost" href="#training">Виж програмата</a>
+      </div>
+      <div class="hero-stats reveal">
+        <div class="stat"><b id="statWeek">—</b><span>Седмица от 8</span></div>
+        <div class="stat"><b id="statDays">—</b><span>Дни в играта</span></div>
+        <div class="stat"><b>4</b><span>Тренировки седмично</span></div>
+        <div class="stat"><b id="statKcal">—</b><span>Ккал на ден</span></div>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true"><i></i>Скролни</div>
+  </section>
+
+  <!-- ══ ИСТОРИЯТА ══ -->
+  <section id="history">
+    <div class="wrap">
+      <p class="eyebrow reveal">01 · Историята</p>
+      <h2 class="reveal">Пътят, седмица по седмица</h2>
+      <p class="lead reveal">Програмата е разделена на осем етапа. Всеки има точно една задача —
+        не се качва тежест, докато техниката не е чиста.</p>
+
+      <div class="progress-card reveal" style="margin-top:38px">
+        <div style="display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap">
+          <div>
+            <p class="eyebrow" style="color:var(--orange)">Текущ етап</p>
+            <h3 id="phaseTitle" style="margin-top:9px;font-size:24px">—</h3>
+            <p id="phaseDesc" class="muted" style="margin-top:7px;max-width:46ch">—</p>
+          </div>
+          <p class="muted" id="phaseCount">—</p>
+        </div>
+        <div class="weeks" id="weeksGrid"></div>
+      </div>
+
+      <div class="timeline reveal" id="timeline"></div>
+    </div>
+  </section>
+
+  <!-- ══ ТРЕНИРОВКИ ══ -->
+  <section id="training">
+    <div class="wrap">
+      <p class="eyebrow reveal">02 · Тренировъчна програма</p>
+      <h2 class="reveal">Четири дни. Едно и също, направено добре.</h2>
+      <p class="lead reveal">45 минути на тренировка, 8 минути загрявка, 5 минути охлаждане.
+        Без екзотика — базови движения, чиста техника и бавно покачване.</p>
+      <div class="grid two" id="workoutGrid"></div>
+
+      <h3 class="reveal" style="margin-top:52px;font-size:22px">Прогресията за 8 седмици</h3>
+      <div class="grid three reveal" id="progressionGrid" style="margin-top:20px"></div>
+    </div>
+  </section>
+
+  <!-- ══ ХРАНЕНЕ ══ -->
+  <section id="food">
+    <div class="wrap">
+      <p class="eyebrow reveal">03 · Хранителен режим</p>
+      <h2 class="reveal">Ям много. Просто ям точно.</h2>
+      <p class="lead reveal">Четири хранения на ден, около 150 г протеин, готвене за двама с общи грамажи.
+        Нищо забранено — всичко измерено.</p>
+
+      <div class="card reveal" style="margin-top:34px;padding:10px 22px 18px" id="foodDays"></div>
+
+      <div class="rules reveal">
+        <div class="rule"><i>1</i><span>Вечерята се готви в двойно количество — половината става обяд за следващия ден.</span></div>
+        <div class="rule"><i>2</i><span>Грамажите са сурови/сухи, освен ако изрично не е казано друго.</span></div>
+        <div class="rule"><i>3</i><span>Порцията на съпругата е включена в общите количества — не се смята отделно.</span></div>
+        <div class="rule"><i>4</i><span>Продуктите се мерят преди готвене, не на око след това.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ КНИГИ ══ -->
+  <section id="books">
+    <div class="wrap">
+      <p class="eyebrow reveal">04 · Книгите</p>
+      <h2 class="reveal">Какво чета и какво остана от него</h2>
+      <p class="lead reveal">Тялото е половината. Другата половина е какво влиза в главата.</p>
+      <div class="grid three" id="booksGrid" style="margin-top:34px"></div>
+    </div>
+  </section>
+
+  <!-- ══ CTA ══ -->
+  <section>
+    <div class="wrap">
+      <div class="cta reveal">
+        <p class="eyebrow" style="color:#3d4633">Приложението</p>
+        <h2 style="margin-top:12px">Целият план — в джоба ми, всеки ден.</h2>
+        <p>Рецепти стъпка по стъпка, таймер за сериите, списъци за пазар и отметки за всяко хранене.
+          Отвори го и виж как изглежда отвътре.</p>
+        <a class="btn" href="index.html">Отвори ХЪСЪЛ →</a>
+      </div>
+      <footer>
+        <span>ХЪСЪЛ · лично предизвикателство · <span id="year"></span></span>
+        <span><a href="index.html">Приложението</a> · <a href="#top">Нагоре ↑</a></span>
+      </footer>
+    </div>
+  </section>
+
+</main>
+
+<!-- Three.js r128 (MIT) — локално копие, за да работи и офлайн. Лиценз: vendor/THREE-LICENSE.txt -->
+<script src="vendor/three.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   ТУК РЕДАКТИРАШ СЪДЪРЖАНИЕТО
+   Всичко под този блок е данни. Промени ги и страницата се обновява.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Датата, на която стартира предизвикателството (същата като в приложението) */
+const START = new Date('2026-08-02T12:00:00');
+
+/* Историята: добавяй нов запис най-отгоре, когато има какво да се разкаже.
+   date: как да се изпише датата · title: заглавие · text: твоят текст */
+const TIMELINE = [
+  { date: '2 август 2026', title: 'Първи ден', text: 'Осем седмици, четири тренировки седмично и хранителен план, изчислен до грам. Записах всичко предварително, за да няма къде да се измъкна.' },
+  { date: 'Седмици 1–2', title: 'Техника преди тежест', text: 'Никакво качване на килограми. Само чисти повторения, RPE 6–7 и по 3–4 повторения в резерв. После — по една допълнителна серия на първите две упражнения.' },
+  { date: 'Седмици 3–4', title: 'Обемът се качва', text: 'Повече повторения на всичко, планк до 40 секунди. Тежестта се качва с 5% само ако последната серия е била лесна.' },
+  { date: 'Седмица 5', title: 'Deload — почивката е част от плана', text: 'Две серии на всичко, леки тежести, без интервали. Най-трудната седмица психически, защото изглежда, че не правиш нищо.' },
+  { date: 'Седмици 6–8', title: 'Финалният натиск', text: 'Връщане към тежестите от седмица 4 плюс по едно повторение, ново покачване от 5% и пикова седмица в горния край на повторенията.' }
+];
+
+/* Книгите. Формат:
+   { title:'Заглавие', author:'Автор', rating:4, color:'#c9f45b', note:'Твоето мнение с 2–3 изречения.' }
+   rating е от 1 до 5. Изтрий примера и сложи твоите. */
+const BOOKS = [
+  // { title:'Атомни навици', author:'Джеймс Клиър', rating:5, color:'#c9f45b',
+  //   note:'Твоето мнение тук — какво ти даде и на кого би я препоръчал.' },
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   ОТТУК НАДОЛУ Е КОДЪТ — обикновено няма нужда да го пипаш
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Данните за тренировките и храненето (същите като в приложението) ── */
+const WORKOUTS = [
+  { day:'Неделя', title:'Крака + Core', focus:'Стабилен кръст · силна долна част', finisher:'Финал: 5 мин ходене с наклон',
+    exercises:[['Гоблет клек','3 × 10–12'],['Лег преса','3 × 10–12'],['Румънска тяга с дъмбели','3 × 10'],['Планк','3 × 30 сек']] },
+  { day:'Понеделник', title:'Бутане', focus:'Гърди · рамене · трицепс', finisher:'Финал: 5 мин велоергометър',
+    exercises:[['Дъмбел преса на лег','3 × 10'],['Раменна преса с облегалка','3 × 10'],['Флайс на машина','2 × 12'],['Трицепс на скрипец','2 × 12']] },
+  { day:'Сряда', title:'Дърпане + Core', focus:'Гръб · бицепс · стабилност', finisher:'Финал: 5 мин ходене с наклон',
+    exercises:[['Придърпване на горен скрипец','3 × 10'],['Гребане с опора на гърди','3 × 10'],['Face pull на скрипец','2 × 12'],['Bird dog','2 × 10/страна']] },
+  { day:'Петък', title:'Цяло тяло + кардио', focus:'Основните движения · финален стимул', finisher:'Финал: 8 мин колело · 30 сек бързо / 60 сек леко',
+    exercises:[['Напади с дъмбели','3 × 10/крак'],['Дъмбел преса на лег','3 × 10'],['Гребане на долен скрипец','3 × 10'],['Dead bug','2 × 10/страна']] }
+];
+
+const PROGRESSION = [
+  ['Техника','Базов обем · RPE 6–7 · 3–4 повторения в резерв'],
+  ['Повече обем','+1 серия на първите две упражнения всеки ден'],
+  ['Повече повторения','+1–2 повторения на всичко · планк 40 сек'],
+  ['Повече тежест','+5% само ако последната серия е лесна'],
+  ['DELOAD','2 серии на всичко · леки тежести · без интервали'],
+  ['Връщане','Тежестите от седмица 4 + 1 повторение'],
+  ['Ново покачване','+5% тежест · RPE 7–8'],
+  ['Пикова седмица','Горен край на повторенията · RPE 7–8']
+];
+
+const FOOD_DAYS = [
+  ['Понеделник','Яйца, хляб и зеленчуци · картофена салата с риба тон · пилешко с ориз',2900,150],
+  ['Вторник','Овесени палачинки с банан · пилешко с ориз · леща със зеленчуци',2950,150],
+  ['Сряда','Тортила с яйца и сирене · леща със зеленчуци · пилешко филе с картофи',2850,150],
+  ['Четвъртък','Топла овесена каша и яйца · пилешко с картофи · телешки кюфтета',2850,150],
+  ['Петък','Яйца, хляб и зеленчуци · кюфтета с картофи · нахут с ориз',2900,145],
+  ['Събота','Овесени палачинки с банан · нахут с ориз · пилешко с булгур',2900,150],
+  ['Неделя','Тортила с яйца и сирене · пилешко с булгур · картофена салата с риба тон',2850,145]
+];
+
+/* ── Изчисления по календара ── */
+const now = new Date();
+const dayNo = Math.max(1, Math.floor((now - START) / 86400000) + 1);
+const week  = Math.max(1, Math.min(8, Math.floor((now - START) / 604800000) + 1));
+const avgKcal = Math.round(FOOD_DAYS.reduce((s,d) => s + d[2], 0) / FOOD_DAYS.length / 10) * 10;
+
+document.querySelector('#statWeek').textContent = week;
+document.querySelector('#statDays').textContent = dayNo > 0 ? dayNo : 0;
+document.querySelector('#statKcal').textContent = '~' + avgKcal;
+document.querySelector('#year').textContent = now.getFullYear();
+document.querySelector('#phaseTitle').textContent = PROGRESSION[week-1][0];
+document.querySelector('#phaseDesc').textContent = PROGRESSION[week-1][1];
+document.querySelector('#phaseCount').textContent = 'Седмица ' + week + ' от 8';
+
+/* ── Рендериране ── */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+document.querySelector('#weeksGrid').innerHTML = PROGRESSION.map((p,i) => {
+  const n = i + 1;
+  const cls = n < week ? 'done' : n === week ? 'now' : '';
+  return '<div class="week ' + cls + '"><b>' + n + '</b><span>' + (n < week ? 'готово' : n === week ? 'сега' : 'предстои') + '</span></div>';
+}).join('');
+
+document.querySelector('#timeline').innerHTML = TIMELINE.map((t,i) =>
+  '<article class="tl-item' + (i === 0 ? '' : '') + '"><p class="tl-date">' + esc(t.date) + '</p>' +
+  '<h3>' + esc(t.title) + '</h3><p>' + esc(t.text) + '</p></article>').join('');
+
+const tagFor = i => ['','rest','soft','warm'][i % 4];
+document.querySelector('#workoutGrid').innerHTML = WORKOUTS.map((w,i) =>
+  '<article class="card reveal"><span class="tag ' + tagFor(i) + '">' + esc(w.day) + ' · 45 мин</span>' +
+  '<h3>' + esc(w.title) + '</h3><p>' + esc(w.focus) + '</p>' +
+  '<ul class="ex-list">' + w.exercises.map(e => '<li><span>' + esc(e[0]) + '</span><b>' + esc(e[1]) + '</b></li>').join('') + '</ul>' +
+  '<small class="finisher">' + esc(w.finisher) + '</small></article>').join('');
+
+document.querySelector('#progressionGrid').innerHTML = PROGRESSION.map((p,i) =>
+  '<article class="card"><span class="tag ' + (i+1 === week ? 'warm' : 'soft') + '">Седмица ' + (i+1) + '</span>' +
+  '<h3>' + esc(p[0]) + '</h3><p>' + esc(p[1]) + '</p></article>').join('');
+
+document.querySelector('#foodDays').innerHTML = FOOD_DAYS.map(d =>
+  '<div class="day-row"><span class="d">' + esc(d[0]) + '</span><span class="m">' + esc(d[1]) + '</span>' +
+  '<span class="k">' + d[2] + ' ккал · ' + d[3] + ' г протеин</span></div>').join('');
+
+const palette = ['#c9f45b','#ff8452','#ffc54d','#afdceb','#ffcaa8'];
+document.querySelector('#booksGrid').innerHTML = BOOKS.length
+  ? BOOKS.map((b,i) =>
+      '<article class="card book reveal"><div class="cover" style="background:' +
+      esc(b.color || palette[i % palette.length]) + '">' + esc(b.title) + '</div>' +
+      '<div><h3>' + esc(b.title) + '</h3><p class="muted" style="margin-top:5px">' + esc(b.author || '') + '</p>' +
+      '<p class="rating">' + '★'.repeat(Math.max(0,Math.min(5, b.rating||0))) + '☆'.repeat(5 - Math.max(0,Math.min(5, b.rating||0))) + '</p></div>' +
+      '<p style="color:#b6bcae;font-size:13.5px">' + esc(b.note || '') + '</p></article>').join('')
+  : '<div class="empty-state" style="grid-column:1/-1"><b>Първите отзиви идват скоро.</b><br>' +
+    'Тук ще излизат книгите, които чета по време на предизвикателството, и какво остана от тях.</div>';
+
+/* ── Reveal при скрол ── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: .12, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* ── Компактен топбар при скрол ── */
+addEventListener('scroll', () => {
+  document.querySelector('header').style.background =
+    scrollY > 40 ? 'rgba(13,15,11,.86)' : 'linear-gradient(#0d0f0bd9,#0d0f0b00)';
+}, { passive: true });
+
+/* ═══════════════════════════════════════════════════════════════
+   3D СЦЕНАТА — осем пръстена, по един за всяка седмица.
+   Камерата минава през тях, докато скролваш: минатите светят в лайм,
+   текущата седмица пулсира в оранжево, предстоящите са тъмни.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  const canvas = document.querySelector('#bg');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (typeof THREE === 'undefined' || !window.WebGLRenderingContext) {
+    canvas.style.display = 'none';
+    document.querySelector('#bg-fallback').style.display = 'block';
+    return;
+  }
+
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+  } catch (err) {
+    canvas.style.display = 'none';
+    document.querySelector('#bg-fallback').style.display = 'block';
+    return;
+  }
+
+  const LIME = 0xc9f45b, ORANGE = 0xff8452, DARK = 0x2a2f24, GOLD = 0xffc54d;
+  const SPACING = 13;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0d0f0b);
+  scene.fog = new THREE.Fog(0x0d0f0b, 22, 95);
+
+  const camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.1, 200);
+  camera.position.set(0, 0, 14);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+  const key = new THREE.DirectionalLight(0xffffff, 0.55);
+  key.position.set(4, 6, 8);
+  scene.add(key);
+  const limeLight = new THREE.PointLight(LIME, 0.85, 55);
+  limeLight.position.set(-6, 3, 6);
+  scene.add(limeLight);
+  const warmLight = new THREE.PointLight(ORANGE, 0.7, 55);
+  warmLight.position.set(7, -4, 2);
+  scene.add(warmLight);
+
+  const narrow = innerWidth < 860;
+
+  /* Пръстените — по един на седмица */
+  const rings = [];
+  for (let i = 0; i < 8; i++) {
+    const n = i + 1;
+    const done = n < week, current = n === week;
+    const geo = new THREE.TorusGeometry(6.6, done || current ? 0.2 : 0.12, 14, 84);
+    const mat = new THREE.MeshStandardMaterial({
+      color: current ? ORANGE : done ? LIME : DARK,
+      emissive: current ? ORANGE : done ? LIME : 0x000000,
+      emissiveIntensity: current ? 0.3 : done ? 0.16 : 0,
+      roughness: 0.45, metalness: 0.2,
+      transparent: true, opacity: done ? 0.75 : current ? 0.85 : 0.32
+    });
+    const ring = new THREE.Mesh(geo, mat);
+    ring.position.set(Math.sin(i * 1.1) * 1.3, Math.cos(i * 0.8) * 1, -i * SPACING);
+    ring.rotation.set(Math.sin(i) * 0.4, Math.cos(i) * 0.4, i * 0.3);
+    ring.userData = { i, current, speed: 0.12 + i * 0.02 };
+    scene.add(ring);
+    rings.push(ring);
+  }
+
+  /* Дъмбел в началото — символът на цялото нещо */
+  const bar = new THREE.Group();
+  const barMat = new THREE.MeshStandardMaterial({ color: 0xd8dbd2, roughness: 0.3, metalness: 0.75 });
+  const plateMat = new THREE.MeshStandardMaterial({ color: LIME, emissive: LIME, emissiveIntensity: 0.12, roughness: 0.5, metalness: 0.2 });
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 4.4, 24), barMat);
+  shaft.rotation.z = Math.PI / 2;
+  bar.add(shaft);
+  [-1.65, -1.25, 1.25, 1.65].forEach((x, idx) => {
+    const r = idx === 0 || idx === 3 ? 0.62 : 0.82;
+    const plate = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.32, 32), idx % 3 === 0 ? plateMat : barMat);
+    plate.rotation.z = Math.PI / 2;
+    plate.position.x = x;
+    bar.add(plate);
+  });
+  bar.position.set(narrow ? 0 : 4.2, narrow ? -4.6 : -0.4, narrow ? 4.6 : 6.4);
+  bar.scale.setScalar(narrow ? 0.72 : 1);
+  bar.rotation.set(0.35, 0.5, 0.15);
+  scene.add(bar);
+
+  /* Прах във въздуха */
+  const count = innerWidth < 700 ? 320 : 700;
+  const pos = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    pos[i*3]     = (Math.random() - 0.5) * 46;
+    pos[i*3 + 1] = (Math.random() - 0.5) * 30;
+    pos[i*3 + 2] = -Math.random() * (SPACING * 8 + 20) + 10;
+  }
+  const dust = new THREE.Points(
+    new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(pos, 3)),
+    new THREE.PointsMaterial({ color: GOLD, size: 0.07, transparent: true, opacity: 0.32, sizeAttenuation: true })
+  );
+  scene.add(dust);
+
+  /* Размери */
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.8));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  addEventListener('resize', resize);
+
+  /* Скрол и мишка */
+  let scrollTarget = 0, scrollNow = 0, mx = 0, my = 0, tmx = 0, tmy = 0;
+  function readScroll() {
+    const max = document.body.scrollHeight - innerHeight;
+    scrollTarget = max > 0 ? scrollY / max : 0;
+  }
+  readScroll();
+  addEventListener('scroll', readScroll, { passive: true });
+  addEventListener('pointermove', e => {
+    tmx = (e.clientX / innerWidth - 0.5) * 2;
+    tmy = (e.clientY / innerHeight - 0.5) * 2;
+  }, { passive: true });
+
+  let running = true;
+  document.addEventListener('visibilitychange', () => {
+    running = !document.hidden;
+    if (running) requestAnimationFrame(frame);
+  });
+
+  const clock = new THREE.Clock();
+  const travel = SPACING * 7 + 16;
+
+  function frame() {
+    if (!running) return;
+    requestAnimationFrame(frame);
+
+    const t = clock.getElapsedTime();
+    scrollNow += (scrollTarget - scrollNow) * (reduced ? 1 : 0.075);
+    mx += (tmx - mx) * 0.06;
+    my += (tmy - my) * 0.06;
+
+    camera.position.z = 14 - scrollNow * travel;
+    camera.position.x = mx * 1.8;
+    camera.position.y = -my * 1.2;
+    camera.lookAt(0, 0, camera.position.z - 12);
+
+    if (!reduced) {
+      rings.forEach(r => {
+        r.rotation.z += 0.0025 * r.userData.speed * 8;
+        r.rotation.x += 0.0012;
+        if (r.userData.current) {
+          const pulse = 1 + Math.sin(t * 2) * 0.035;
+          r.scale.setScalar(pulse);
+          r.material.emissiveIntensity = 0.26 + Math.sin(t * 2) * 0.1;
+        }
+      });
+      bar.rotation.y += 0.004;
+      bar.rotation.x = 0.35 + Math.sin(t * 0.7) * 0.08;
+      bar.position.y = (narrow ? -4.6 : -0.4) + Math.sin(t * 0.9) * 0.18;
+      dust.rotation.y = t * 0.012;
+      limeLight.position.x = Math.sin(t * 0.4) * 7;
+      warmLight.position.y = Math.cos(t * 0.35) * 5;
+    }
+
+    renderer.render(scene, camera);
+  }
+  frame();
+})();
+</script>
+</body>
+</html>

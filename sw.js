@@ -1,7 +1,9 @@
-const CACHE = 'hustle-v7-meal-plan-2026-08-13';
+const CACHE = 'hustle-v8-story-2026-08-29';
 const CORE = [
   './',
   './index.html',
+  './story.html',
+  './vendor/three.min.js',
   './manifest.webmanifest',
   './assets/icon-192.png',
   './assets/icon-512.png',
@@ -32,17 +34,21 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   const request = event.request;
-  const isPage = request.mode === 'navigate' || new URL(request.url).pathname.endsWith('/index.html');
+  const path = new URL(request.url).pathname;
+  const isPage = request.mode === 'navigate' || path.endsWith('.html');
+  // Всяка страница се кешира под собствения си адрес. Само коренът и index.html
+  // обновяват кеша на приложението — иначе story.html би заменил index.html.
+  const cacheKey = path.endsWith('/story.html') ? './story.html' : './index.html';
 
   if (isPage) {
     event.respondWith(
       fetch(request)
         .then(response => {
           const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put('./index.html', copy));
+          caches.open(CACHE).then(cache => cache.put(cacheKey, copy));
           return response;
         })
-        .catch(() => caches.match('./index.html'))
+        .catch(() => caches.match(cacheKey).then(hit => hit || caches.match('./index.html')))
     );
     return;
   }
