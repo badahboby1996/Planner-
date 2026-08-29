@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#0e100c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="description" content="Тренировки, храна, книги и системи — светът на Боби на едно място." />
+<title>ХЪСЪЛ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root{
+  --bg:#0e100c;
+  --ink:#f4f1e8;
+  --muted:#8b8f83;
+  --line:rgba(244,241,232,.1);
+  --card:#171a14;
+  --orange:#ff8452;
+  --lime:#c9f45b;
+  --gold:#ffc54d;
+  --sky:#afdceb;
+  --accent:var(--lime);
+  --display:'Unbounded',system-ui,sans-serif;
+  --body:'Manrope',-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0}
+html{background:var(--bg);overscroll-behavior:none}
+body{
+  font-family:var(--body);color:var(--ink);background:var(--bg);
+  min-height:100dvh;overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+a{color:inherit}
+
+/* ══════════ сцена ══════════ */
+.stage{
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  background:
+    radial-gradient(120% 65% at 50% -10%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 60%),
+    radial-gradient(100% 50% at 50% 115%,color-mix(in srgb,var(--accent) 9%,transparent),transparent 55%),
+    var(--bg);
+  transition:background 1s;
+}
+.grain{position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:60;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E")}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:max(16px,env(safe-area-inset-top)) 22px 0;position:relative;z-index:5;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{width:36px;height:36px;background:var(--ink);color:var(--bg);border-radius:12px;
+  display:grid;place-items:center;transform:rotate(-6deg);
+  font-family:var(--display);font-weight:900;font-size:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.wordmark{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.22em}
+.top-tag{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:8px 13px}
+
+/* гигантският фонов надпис */
+.giant{
+  position:absolute;left:0;right:0;top:calc(66px + env(safe-area-inset-top));
+  display:flex;justify-content:center;
+  pointer-events:none;user-select:none;z-index:1;overflow:hidden;
+}
+.giant span{
+  font-family:var(--display);font-weight:900;
+  font-size:clamp(80px,24.5vw,220px);line-height:1;letter-spacing:.01em;
+  color:color-mix(in srgb,var(--accent) 11%,transparent);
+  -webkit-text-stroke:1.5px color-mix(in srgb,var(--ink) 34%,transparent);
+  transition:color 1s,-webkit-text-stroke-color 1s;
+  white-space:nowrap;
+}
+.giant-word{
+  position:absolute;left:0;right:0;bottom:calc(140px + env(safe-area-inset-bottom));
+  text-align:center;z-index:2;pointer-events:none;
+}
+.giant-word b{
+  display:inline-block;
+  font-family:var(--display);font-weight:700;font-size:12px;
+  letter-spacing:.34em;text-transform:uppercase;
+  color:var(--accent);transition:color .6s;
+  animation:wordIn .6s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes wordIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ══════════ 3D каруселът ══════════ */
+.carousel{
+  position:relative;flex:1;z-index:3;
+  perspective:1150px;perspective-origin:50% 42%;
+  touch-action:pan-y;
+}
+.ring{
+  position:absolute;left:50%;top:47%;
+  transform-style:preserve-3d;
+  width:0;height:0;
+  will-change:transform;
+}
+.card{
+  position:absolute;
+  width:min(66vw,268px);aspect-ratio:3/4.15;
+  left:calc(min(66vw,268px)/-2);top:calc(min(66vw,268px)*4.15/3/-2);
+  border-radius:30px;
+  background:
+    linear-gradient(165deg,color-mix(in srgb,var(--c) 22%,var(--card)),var(--card) 62%);
+  border:1px solid color-mix(in srgb,var(--c) 36%,transparent);
+  box-shadow:0 34px 70px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);
+  padding:20px;display:flex;flex-direction:column;text-align:left;
+  transform-style:preserve-3d;
+  will-change:transform,opacity,filter;
+}
+.card::after{
+  content:"";position:absolute;inset:0;border-radius:30px;pointer-events:none;
+  background:radial-gradient(90% 55% at 50% -12%,color-mix(in srgb,var(--c) 30%,transparent),transparent 70%);
+}
+.card .num{
+  font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.2em;
+  color:color-mix(in srgb,var(--c) 80%,var(--ink));
+}
+.orbit{
+  position:relative;flex:1;transform-style:preserve-3d;pointer-events:none;
+}
+.orbit i{
+  position:absolute;font-style:normal;
+  filter:drop-shadow(0 16px 22px rgba(0,0,0,.45));
+  animation:float 5.2s ease-in-out infinite;
+}
+.orbit i:nth-child(1){font-size:72px;left:50%;top:48%;translate:-50% -58%;transform:translateZ(70px);animation-delay:0s}
+.orbit i:nth-child(2){font-size:34px;left:12%;top:14%;transform:translateZ(34px);animation-delay:-1.8s}
+.orbit i:nth-child(3){font-size:30px;right:8%;top:58%;transform:translateZ(96px);animation-delay:-3.4s}
+@keyframes float{0%,100%{margin-top:0}50%{margin-top:-13px}}
+.card h2{
+  font-family:var(--display);font-weight:900;font-size:clamp(19px,5.6vw,24px);
+  line-height:1.04;letter-spacing:-.01em;text-wrap:balance;
+}
+.card p{color:var(--muted);font-size:12px;line-height:1.5;margin-top:8px;font-weight:500}
+.card .go{
+  margin-top:14px;align-self:flex-start;
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--c);color:#101208;
+  font-weight:800;font-size:12px;border-radius:999px;padding:11px 16px;
+}
+.hint{
+  position:absolute;left:0;right:0;bottom:calc(96px + env(safe-area-inset-bottom));
+  text-align:center;z-index:4;pointer-events:none;
+  color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  animation:hintPulse 2.6s ease-in-out infinite;
+}
+@keyframes hintPulse{0%,100%{opacity:.45}50%{opacity:.95}}
+.dots{
+  position:absolute;left:0;right:0;bottom:calc(52px + env(safe-area-inset-bottom));
+  display:flex;justify-content:center;gap:9px;z-index:4;
+}
+.dots button{
+  width:26px;height:26px;display:grid;place-items:center;
+}
+.dots button::after{
+  content:"";width:7px;height:7px;border-radius:99px;background:var(--line);
+  background:rgba(244,241,232,.25);transition:.35s;
+}
+.dots button.on::after{width:26px;background:var(--accent)}
+
+/* входна анимация */
+.stage.enter .card{animation:cardIn .9s cubic-bezier(.2,.8,.2,1) backwards}
+.stage.enter .giant span{animation:giantIn 1s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes giantIn{from{opacity:0;letter-spacing:.3em}to{opacity:1}}
+@keyframes cardIn{from{opacity:0}to{opacity:1}}
+
+/* ══════════ детайлни екрани ══════════ */
+.detail{
+  position:fixed;inset:0;z-index:80;background:var(--bg);
+  transform:translateY(103%);transition:transform .55s cubic-bezier(.24,.9,.26,1);
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
+.detail.open{transform:translateY(0)}
+.detail-inner{width:min(100%,560px);margin:0 auto;padding:0 20px calc(46px + env(safe-area-inset-bottom))}
+.detail-bar{
+  position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:13px;
+  padding:max(14px,env(safe-area-inset-top)) 0 12px;
+  background:linear-gradient(color-mix(in srgb,var(--dc) 12%,var(--bg)) 65%,transparent);
+}
+.back{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(244,241,232,.08);border:1px solid var(--line);
+  display:grid;place-items:center;font-size:20px;flex:0 0 44px;
+}
+.detail-bar small{font-weight:800;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dc)}
+.detail-hero{
+  padding:20px 0 8px;position:relative;
+}
+.detail-hero .big{
+  font-family:var(--display);font-weight:900;
+  font-size:clamp(40px,12vw,64px);line-height:.96;letter-spacing:-.01em;
+  text-wrap:balance;
+}
+.detail-hero .big em{font-style:normal;color:var(--dc)}
+.detail-hero>p{color:var(--muted);font-size:14px;line-height:1.6;margin-top:14px;max-width:46ch}
+.hero-emoji{position:absolute;right:-6px;top:2px;font-size:58px;transform:rotate(8deg);
+  filter:drop-shadow(0 14px 20px rgba(0,0,0,.45));animation:float 5s ease-in-out infinite}
+.detail section{margin-top:26px}
+.sec-label{
+  font-weight:800;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--dc);margin-bottom:12px;display:flex;align-items:center;gap:10px;
+}
+.sec-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.rows{display:grid;gap:10px}
+.row{
+  background:var(--card);border:1px solid var(--line);border-radius:22px;
+  padding:16px;display:grid;grid-template-columns:46px 1fr auto;gap:13px;align-items:center;
+}
+.row .ic{
+  width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-size:22px;
+  background:color-mix(in srgb,var(--dc) 16%,transparent);
+}
+.row b{font-size:14.5px;letter-spacing:-.01em;display:block}
+.row span{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:4px}
+.row .side{font-family:var(--display);font-weight:700;font-size:10px;color:var(--dc);letter-spacing:.06em;white-space:nowrap}
+.wide{
+  background:linear-gradient(150deg,color-mix(in srgb,var(--dc) 20%,var(--card)),var(--card) 70%);
+  border:1px solid color-mix(in srgb,var(--dc) 30%,transparent);
+  border-radius:24px;padding:19px;
+}
+.wide h3{font-family:var(--display);font-weight:700;font-size:15px;line-height:1.25}
+.wide p{color:#c9ccc0;font-size:13px;line-height:1.6;margin-top:9px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+.pills span{font-size:11px;font-weight:800;border:1px solid color-mix(in srgb,var(--dc) 45%,transparent);
+  color:var(--dc);border-radius:999px;padding:7px 11px}
+.book{
+  background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;
+}
+.book+.book{margin-top:10px}
+.book-top{display:flex;justify-content:space-between;gap:14px;align-items:start}
+.book h3{font-size:16px;letter-spacing:-.01em;line-height:1.2}
+.book .author{color:var(--muted);font-size:12px;margin-top:4px;display:block}
+.stars{color:var(--dc);font-size:13px;letter-spacing:2px;white-space:nowrap}
+.book blockquote{
+  margin:12px 0 0;padding:12px 14px;border-left:3px solid var(--dc);
+  background:rgba(244,241,232,.045);border-radius:6px 14px 14px 6px;
+  font-size:13px;line-height:1.6;color:#d5d7cc;
+}
+.status-pill{display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+  font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  background:color-mix(in srgb,var(--dc) 18%,transparent);color:var(--dc);
+  border-radius:999px;padding:7px 11px}
+.status-pill i{width:7px;height:7px;border-radius:50%;background:var(--dc);font-style:normal;
+  animation:hintPulse 1.6s infinite}
+.thought{
+  border-left:3px solid var(--dc);padding:4px 0 4px 16px;margin-top:14px;
+}
+.thought p{font-size:14px;line-height:1.65;color:#d5d7cc;font-style:italic}
+.thought small{display:block;margin-top:8px;color:var(--muted);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.soon{
+  margin-top:26px;border:1.5px dashed color-mix(in srgb,var(--dc) 40%,transparent);
+  border-radius:22px;padding:17px;display:flex;gap:13px;align-items:center;
+}
+.soon .flash{font-size:24px}
+.soon b{font-size:13.5px;display:block}
+.soon span{color:var(--muted);font-size:12px;line-height:1.45;display:block;margin-top:3px}
+.detail-footer{
+  margin-top:34px;text-align:center;color:var(--muted);font-size:12px;
+}
+.detail-footer a{
+  display:inline-flex;align-items:center;gap:9px;margin-top:12px;
+  font-weight:800;font-size:13px;color:var(--ink);text-decoration:none;
+  background:rgba(244,241,232,.07);border:1px solid var(--line);
+  border-radius:999px;padding:13px 20px;
+}
+.next-cat{
+  margin-top:14px;width:100%;
+  background:var(--card);border:1px solid var(--line);border-radius:22px;
+  padding:17px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;
+}
+.next-cat small{display:block;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.next-cat b{display:block;font-family:var(--display);font-size:15px;margin-top:5px}
+.next-cat .arr{font-size:22px;color:var(--dc)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01s!important}
+}
+@media (min-width:700px){
+  .carousel{perspective:1400px}
+  .hint{bottom:110px}.dots{bottom:64px}
+  .giant-word{bottom:150px}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="stage enter" id="stage">
+  <header class="topbar">
+    <div class="brand"><div class="mark">Х</div><div class="wordmark">ХЪСЪЛ</div></div>
+    <div class="top-tag">Светът на Боби</div>
+  </header>
+
+  <div class="giant" aria-hidden="true"><span>ХЪСЪЛ</span></div>
+
+  <div class="carousel" id="carousel">
+    <div class="ring" id="ring"></div>
+  </div>
+
+  <div class="giant-word"><b id="giantWord">Движение</b></div>
+  <div class="hint" id="hint">Плъзни · докосни карта</div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<!-- ══════════ ТРЕНИРОВКИ ══════════ -->
+<section class="detail" id="d-workout" style="--dc:var(--orange)" aria-label="Тренировки">
+  <div class="detail-inner">
+    <div class="detail-bar"><button class="back" data-back aria-label="Назад">←</button><small>Движение</small></div>
+    <div class="detail-hero">
+      <span class="hero-emoji">🏋️</span>
+      <h1 class="big">Тялото е<br><em>инструментът.</em></h1>
+      <p>Тренирам 4 пъти седмично по 45 минути. Без магия, без екстремни програми — техника преди тежест и прогресия, която се трупа седмица след седмица.</p>
+    </div>
+    <section>
+      <div class="sec-label">Седмичният сплит</div>
+      <div class="rows">
+        <div class="row"><div class="ic">🔥</div><div><b>Понеделник — Долна част</b><span>Крака, седалище, core. Основата на всичко.</span></div><div class="side">45 МИН</div></div>
+        <div class="row"><div class="ic">💪</div><div><b>Сряда — Горна част · бутане</b><span>Гърди, рамене, трицепс.</span></div><div class="side">45 МИН</div></div>
+        <div class="row"><div class="ic">🧲</div><div><b>Петък — Горна част · дърпане</b><span>Гръб, бицепс, задно рамо.</span></div><div class="side">45 МИН</div></div>
+        <div class="row"><div class="ic">⚡</div><div><b>Неделя — Цяло тяло</b><span>Комбинирани движения + кондиция.</span></div><div class="side">45 МИН</div></div>
+      </div>
+    </section>
+    <section>
+      <div class="sec-label">Моите правила</div>
+      <div class="wide">
+        <h3>Техниката винаги печели.</h3>
+        <p>По-добре чиста серия с по-малко килограми, отколкото его с лоша форма. Прогресията идва от постоянство — +1 серия или +2.5 кг, когато тялото е готово.</p>
+        <div class="pills"><span>Загрявка винаги</span><span>Прогресивно натоварване</span><span>Сън = възстановяване</span></div>
+      </div>
+    </section>
+    <div class="soon"><div class="flash">📋</div><div><b>Пълният тренировъчен план — скоро тук.</b><span>Упражнения, серии, повторения и видео на техниката.</span></div></div>
+    <button class="next-cat" data-next="food"><div><small>Следващо</small><b>Гориво → храната</b></div><span class="arr">→</span></button>
+    <div class="detail-footer">Имаш въпрос за тренировките?<br><a href="https://instagram.com/" target="_blank" rel="noopener">Пиши ми в Instagram ↗</a></div>
+  </div>
+</section>
+
+<!-- ══════════ ХРАНА ══════════ -->
+<section class="detail" id="d-food" style="--dc:var(--lime)" aria-label="Храна">
+  <div class="detail-inner">
+    <div class="detail-bar"><button class="back" data-back aria-label="Назад">←</button><small>Гориво</small></div>
+    <div class="detail-hero">
+      <span class="hero-emoji">🥩</span>
+      <h1 class="big">Яж по план.<br><em>Живей свободно.</em></h1>
+      <p>Не броя натрапчиво калории и нямам „забранени" храни. Имам система: протеин във всяко хранене, истинска храна и 80/20 баланс, който издържа с години, а не 2 седмици.</p>
+    </div>
+    <section>
+      <div class="sec-label">Примерен ден</div>
+      <div class="rows">
+        <div class="row"><div class="ic">🍳</div><div><b>Закуска</b><span>Яйца, овесени ядки, плод. Протеин от първото хранене.</span></div><div class="side">08:00</div></div>
+        <div class="row"><div class="ic">🍗</div><div><b>Обяд</b><span>Месо или риба + ориз/картофи + салата.</span></div><div class="side">13:00</div></div>
+        <div class="row"><div class="ic">🥗</div><div><b>Вечеря</b><span>По-леко: протеин + зеленчуци. Готвим вкъщи.</span></div><div class="side">19:30</div></div>
+      </div>
+    </section>
+    <section>
+      <div class="sec-label">Принципите ми</div>
+      <div class="wide">
+        <h3>Кухнята решава повече от залата.</h3>
+        <p>Пазарувам по списък, готвя за 2 дни напред и никога не оставям глада да взима решенията вместо мен. Еър фрайърът и мултикукърът са half битката.</p>
+        <div class="pills"><span>Протеин всяко хранене</span><span>80/20 правило</span><span>Meal prep неделя</span><span>Вода &gt; всичко</span></div>
+      </div>
+    </section>
+    <div class="soon"><div class="flash">🧾</div><div><b>Пълният хранителен план — скоро тук.</b><span>Рецепти с грамажи, седмично меню и списък за пазаруване.</span></div></div>
+    <button class="next-cat" data-next="books"><div><small>Следващо</small><b>Умът → книгите</b></div><span class="arr">→</span></button>
+    <div class="detail-footer">Искаш рецептите ми?<br><a href="https://instagram.com/" target="_blank" rel="noopener">Пиши ми в Instagram ↗</a></div>
+  </div>
+</section>
+
+<!-- ══════════ КНИГИ ══════════ -->
+<section class="detail" id="d-books" style="--dc:var(--gold)" aria-label="Книги">
+  <div class="detail-inner">
+    <div class="detail-bar"><button class="back" data-back aria-label="Назад">←</button><small>Умът</small></div>
+    <div class="detail-hero">
+      <span class="hero-emoji">📚</span>
+      <h1 class="big">Четеш —<br><em>ставаш друг.</em></h1>
+      <p>Тук оставям книгите, които реално са ми повлияли, с честното ми мнение. Не резюмета от интернет — какво промених в живота си след всяка от тях.</p>
+    </div>
+    <section>
+      <div class="sec-label">Прочетени + мнение</div>
+      <article class="book">
+        <div class="book-top"><div><h3>Атомни навици</h3><span class="author">Джеймс Клиър</span></div><span class="stars">★★★★★</span></div>
+        <blockquote>Книгата, която ме научи, че не се издигаш до нивото на целите си — падаш до нивото на системите си. Оттук тръгна всичко.</blockquote>
+      </article>
+      <article class="book">
+        <div class="book-top"><div><h3>Дълбока работа</h3><span class="author">Кал Нюпорт</span></div><span class="stars">★★★★☆</span></div>
+        <blockquote>След нея изключих известията и си върнах по 2 часа фокус на ден. Не е лека за четене, но си струва всяка страница.</blockquote>
+      </article>
+      <article class="book">
+        <div class="book-top"><div><h3>Не можеш да ме нараниш</h3><span class="author">Дейвид Гогинс</span></div><span class="stars">★★★★★</span></div>
+        <blockquote>Когато ми се отказва на тренировка, чувам Гогинс. Правилото за 40% — когато мислиш, че си свършил, си използвал едва 40%.</blockquote>
+      </article>
+      <div class="status-pill"><i></i> В момента чета: следва обявяване</div>
+    </section>
+    <div class="soon"><div class="flash">✍️</div><div><b>Пълни ревюта — скоро тук.</b><span>Какво взех от всяка книга + за кого е и за кого не е.</span></div></div>
+    <button class="next-cat" data-next="systems"><div><small>Следващо</small><b>Системата → навиците</b></div><span class="arr">→</span></button>
+    <div class="detail-footer">Препоръчай ми книга!<br><a href="https://instagram.com/" target="_blank" rel="noopener">Пиши ми в Instagram ↗</a></div>
+  </div>
+</section>
+
+<!-- ══════════ НАВИЦИ И СИСТЕМИ ══════════ -->
+<section class="detail" id="d-systems" style="--dc:var(--sky)" aria-label="Навици и системи">
+  <div class="detail-inner">
+    <div class="detail-bar"><button class="back" data-back aria-label="Назад">←</button><small>Системата</small></div>
+    <div class="detail-hero">
+      <span class="hero-emoji">🧭</span>
+      <h1 class="big">Мотивацията<br>свършва. <em>Системата — не.</em></h1>
+      <p>Това е най-личната секция. Навиците, които реално ползвам всеки ден, нещата, през които минавам, и мислите ми на глас — без филтър.</p>
+    </div>
+    <section>
+      <div class="sec-label">Системите, които ме държат</div>
+      <div class="rows">
+        <div class="row"><div class="ic">🌅</div><div><b>Сутрешна рутина</b><span>Ставане по едно и също време, вода, движение преди телефона.</span></div><div class="side">ВСЕКИ ДЕН</div></div>
+        <div class="row"><div class="ic">🗓️</div><div><b>Неделно планиране</b><span>30 минути: преглед на седмицата, план за следващата, meal prep.</span></div><div class="side">НЕДЕЛЯ</div></div>
+        <div class="row"><div class="ic">⏱️</div><div><b>Правилото на 2-те минути</b><span>Ако отнема под 2 минути — правя го веднага. Без списък „за после".</span></div><div class="side">ВИНАГИ</div></div>
+        <div class="row"><div class="ic">📵</div><div><b>Телефон извън спалнята</b><span>Най-подценяваният ъпгрейд на съня, който съм правил.</span></div><div class="side">ВЕЧЕР</div></div>
+      </div>
+    </section>
+    <section>
+      <div class="sec-label">Мисли на глас</div>
+      <div class="thought"><p>„Дисциплината не е наказание. Дисциплината е най-искрената форма на самоуважение."</p><small>Боби · лична бележка</small></div>
+      <div class="thought"><p>„Никой не вижда неделите, в които планирам. Всички виждат резултата в петък."</p><small>Боби · лична бележка</small></div>
+    </section>
+    <div class="soon"><div class="flash">🧠</div><div><b>Още системи и лични истории — скоро.</b><span>През какво минавам, какво работи и какво провалих.</span></div></div>
+    <button class="next-cat" data-next="workout"><div><small>Следващо</small><b>Обратно към тялото</b></div><span class="arr">→</span></button>
+    <div class="detail-footer">Разкажи ми твоята система!<br><a href="https://instagram.com/" target="_blank" rel="noopener">Пиши ми в Instagram ↗</a></div>
+  </div>
+</section>
+
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var CATS = [
+    {id:"workout", word:"Движение", color:"var(--orange)", emoji:["🏋️","🔥","💪"],
+     title:"Тренировки", sub:"4 сесии седмично · 45 минути · техника преди тежест."},
+    {id:"food", word:"Гориво", color:"var(--lime)", emoji:["🥩","🍳","🥗"],
+     title:"Храна", sub:"Система вместо диета. Протеин, истинска храна, 80/20."},
+    {id:"books", word:"Умът", color:"var(--gold)", emoji:["📚","📖","✍️"],
+     title:"Книги", sub:"Какво чета, честното ми мнение и какво промених след всяка."},
+    {id:"systems", word:"Системата", color:"var(--sky)", emoji:["🧭","🌅","⚙️"],
+     title:"Навици и системи", sub:"Рутините, които ме държат, и мислите ми на глас."}
+  ];
+  var N = CATS.length, STEP = 360 / N;
+
+  var stage = document.getElementById("stage");
+  var carousel = document.getElementById("carousel");
+  var ring = document.getElementById("ring");
+  var giantWord = document.getElementById("giantWord");
+  var dotsWrap = document.getElementById("dots");
+  var hint = document.getElementById("hint");
+
+  /* карти */
+  var cards = CATS.map(function(c, i){
+    var el = document.createElement("button");
+    el.className = "card";
+    el.style.setProperty("--c", c.color);
+    el.style.animationDelay = (0.15 + i * 0.1) + "s";
+    el.setAttribute("aria-label", c.title);
+    el.innerHTML =
+      '<span class="num">0' + (i+1) + ' / 0' + N + '</span>' +
+      '<div class="orbit"><i>' + c.emoji[0] + '</i><i>' + c.emoji[1] + '</i><i>' + c.emoji[2] + '</i></div>' +
+      '<h2>' + c.title + '</h2><p>' + c.sub + '</p>' +
+      '<span class="go">Разгледай →</span>';
+    ring.appendChild(el);
+    return el;
+  });
+
+  /* точки */
+  var dots = CATS.map(function(c, i){
+    var d = document.createElement("button");
+    d.setAttribute("aria-label", c.title);
+    d.addEventListener("click", function(){ goTo(i); });
+    dotsWrap.appendChild(d);
+    return d;
+  });
+
+  function radius(){
+    var w = Math.min(innerWidth * 0.66, 268);
+    return Math.round(w * 0.78 + 60);
+  }
+  /* пръстенът се избутва назад с R, така предната карта е в мащаб ~1:1 */
+  function ringBase(){ return "translateZ(" + (-radius()) + "px) rotateX(-4deg)"; }
+
+  var rot = 0, target = 0, vel = 0;
+  var dragging = false, autoSpin = !reduceMotion, interacted = false;
+  var activeIdx = -1;
+
+  function mod(n, m){ return ((n % m) + m) % m; }
+  function nearestIndex(r){ return mod(Math.round(-r / STEP), N); }
+
+  function setActive(i){
+    if (i === activeIdx) return;
+    activeIdx = i;
+    var c = CATS[i];
+    document.documentElement.style.setProperty("--accent", c.color);
+    giantWord.textContent = c.word;
+    giantWord.style.animation = "none";
+    void giantWord.offsetWidth;
+    giantWord.style.animation = "";
+    dots.forEach(function(d, k){ d.classList.toggle("on", k === i); });
+  }
+
+  function render(){
+    var R = radius();
+    ring.style.transform = ringBase();
+    for (var i = 0; i < N; i++){
+      var a = i * STEP + rot;
+      var rad = a * Math.PI / 180;
+      var front = Math.cos(rad); /* 1 = отпред, -1 = отзад */
+      var t = "rotateY(" + a + "deg) translateZ(" + R + "px)";
+      cards[i].style.transform = t;
+      cards[i].style.opacity = (0.28 + 0.72 * Math.max(0, front)).toFixed(3);
+      cards[i].style.filter = "brightness(" + (0.55 + 0.45 * Math.max(0, front)).toFixed(3) + ")";
+      cards[i].style.zIndex = String(Math.round(100 + front * 100));
+      cards[i].style.pointerEvents = front > 0.6 ? "auto" : "none";
+      cards[i].tabIndex = front > 0.6 ? 0 : -1;
+    }
+    setActive(nearestIndex(rot));
+  }
+
+  function tick(){
+    if (!dragging){
+      if (autoSpin){
+        rot -= 0.045;
+        target = rot;
+      } else {
+        var diff = target - rot;
+        rot += diff * 0.09 + vel;
+        vel *= 0.9;
+        if (Math.abs(diff) < 0.05 && Math.abs(vel) < 0.01){ rot = target; vel = 0; }
+      }
+    }
+    render();
+    requestAnimationFrame(tick);
+  }
+
+  function snap(withVel){
+    var projected = rot + (withVel || 0) * 14;
+    var cur = Math.round(rot / STEP);
+    var t = Math.round(projected / STEP);
+    /* максимум една карта на свайп — предвидимо при 4 категории */
+    t = Math.max(cur - 1, Math.min(cur + 1, t));
+    target = t * STEP;
+  }
+  function goTo(i){
+    interacted = true; autoSpin = false; hideHint();
+    /* най-късият път до индекс i */
+    var want = -i * STEP;
+    var k = Math.round((rot - want) / 360);
+    target = want + k * 360;
+  }
+
+  function hideHint(){
+    if (hint){ hint.style.transition = "opacity .6s"; hint.style.opacity = "0"; setTimeout(function(){ hint.remove(); hint = null; }, 700); }
+  }
+
+  /* drag */
+  var startX = 0, lastX = 0, lastT = 0, moved = 0, startRot = 0;
+  carousel.addEventListener("pointerdown", function(e){
+    dragging = true; interacted = true; autoSpin = false;
+    startX = lastX = e.clientX; lastT = performance.now();
+    startRot = rot; moved = 0; vel = 0;
+  });
+  addEventListener("pointermove", function(e){
+    if (!dragging) return;
+    var dx = e.clientX - startX;
+    moved = Math.max(moved, Math.abs(dx));
+    var now = performance.now();
+    vel = (e.clientX - lastX) / Math.max(1, now - lastT) * 6;
+    lastX = e.clientX; lastT = now;
+    rot = startRot + dx * 0.22; /* цял екран свайп ≈ една карта */
+  });
+  function endDrag(){
+    if (!dragging) return;
+    dragging = false;
+    if (moved > 6) hideHint();
+    snap(vel);
+    vel = 0;
+  }
+  addEventListener("pointerup", endDrag);
+  addEventListener("pointercancel", endDrag);
+
+  /* tap по предна карта → отваряне */
+  cards.forEach(function(card, i){
+    card.addEventListener("click", function(){
+      if (moved > 8) return; /* беше drag, не tap */
+      if (nearestIndex(rot) !== i){ goTo(i); return; }
+      openDetail(CATS[i].id);
+    });
+  });
+
+  /* клавиатура */
+  addEventListener("keydown", function(e){
+    if (document.querySelector(".detail.open")) return;
+    if (e.key === "ArrowRight") goTo(mod(nearestIndex(rot) + 1, N));
+    if (e.key === "ArrowLeft") goTo(mod(nearestIndex(rot) - 1, N));
+    if (e.key === "Enter") openDetail(CATS[nearestIndex(rot)].id);
+  });
+
+  /* детайлни екрани */
+  var scrollLockY = 0;
+  function openDetail(id){
+    var el = document.getElementById("d-" + id);
+    if (!el) return;
+    document.querySelectorAll(".detail.open").forEach(function(o){ o.classList.remove("open"); });
+    el.scrollTop = 0;
+    el.classList.add("open");
+    goTo(CATS.findIndex(function(c){ return c.id === id; }));
+  }
+  document.querySelectorAll("[data-back]").forEach(function(b){
+    b.addEventListener("click", function(){
+      b.closest(".detail").classList.remove("open");
+    });
+  });
+  document.querySelectorAll("[data-next]").forEach(function(b){
+    b.addEventListener("click", function(){
+      openDetail(b.getAttribute("data-next"));
+    });
+  });
+
+  /* лек parallax на пръстена от pointer */
+  if (!reduceMotion){
+    addEventListener("pointermove", function(e){
+      if (dragging) return;
+      var px = (e.clientX / innerWidth - 0.5);
+      carousel.style.perspectiveOrigin = (50 + px * 8) + "% 42%";
+    });
+  }
+
+  addEventListener("resize", render);
+  render();
+  requestAnimationFrame(tick);
+  setTimeout(function(){ stage.classList.remove("enter"); }, 1600);
+})();
+</script>
+</body>
+</html>
