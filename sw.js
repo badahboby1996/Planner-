@@ -1,4 +1,4 @@
-const CACHE = 'hustle-v7-meal-plan-2026-08-13';
+const CACHE = 'hustle-v8-training-cycle-2026-09-06';
 const CORE = [
   './',
   './index.html',
@@ -9,7 +9,36 @@ const CORE = [
   './assets/exercises-sunday.webp',
   './assets/exercises-monday.webp',
   './assets/exercises-wednesday.webp',
-  './assets/exercises-friday.webp'
+  './assets/exercises-friday.webp',
+  './bent-knee-hollow-hold.webp',
+  './bird-dog.webp',
+  './cable-triceps-pushdown.webp',
+  './calf-raise.webp',
+  './chest-supported-row.webp',
+  './dead-bug.webp',
+  './dumbbell-bench-press.webp',
+  './dumbbell-biceps-curl.webp',
+  './dumbbell-lateral-raise.webp',
+  './dumbbell-romanian-deadlift.webp',
+  './face-pull.webp',
+  './goblet-squat.webp',
+  './heel-taps.webp',
+  './hip-thrust.webp',
+  './incline-dumbbell-press.webp',
+  './lat-pulldown.webp',
+  './leg-curl-machine.webp',
+  './leg-press.webp',
+  './low-cable-biceps-curl.webp',
+  './mcgill-curl-up.webp',
+  './pec-deck-fly.webp',
+  './plank-shoulder-tap.webp',
+  './plank.webp',
+  './reverse-crunch.webp',
+  './reverse-dumbbell-lunge.webp',
+  './rope-triceps-extension.webp',
+  './seated-cable-row.webp',
+  './seated-shoulder-press.webp',
+  './side-plank.webp'
 ];
 
 self.addEventListener('install', event => {
